@@ -46,33 +46,31 @@ def playerStandings():
     playerList = list()
     pipeline = [
         {'$group':
-             {'_id': {'winner': '$winner'},
+             {'_id': '$winner',
               'number': {'$sum': 1}
               }
          }]
     match = Match.objects.aggregate(*pipeline)
     list1 = list(match)
-
     pipeline = [
         {'$group':
-             {'_id': {'loser': '$loser'},
+             {'_id': '$loser',
               'number': {'$sum': 1}
               }
          }]
     match = Match.objects.aggregate(*pipeline)
     list2 = list(match)
-
     for item in player:
         winner = 0
         matches = 0
         for match in list1:
-            if (match['_id']['winner'] == str(item.id)):
+            if (match['_id'] == str(item.id)):
                 winner = match['number']
                 matches = match['number']
                 break;
 
         for match in list2:
-            if (match['_id']['loser'] == str(item.id)):
+            if (match['_id'] == str(item.id)):
                 matches = matches + match['number']
                 break;
 
