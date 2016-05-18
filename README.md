@@ -1,3 +1,3 @@
 # udacity_full_stack_developer
 My blog web application link - 
-http://hybrid-chess-131219.appspot.com/
+https://cedar-heaven-122409.appspot.com/
