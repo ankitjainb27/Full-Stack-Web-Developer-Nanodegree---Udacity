@@ -1,0 +1,32 @@
+body {
+    font-family: 'Lato', sans-serif;
+    color: #747704;
+    font-weight: 300;
+}
+
+.profile {
+    width: 100%;
+}
+
+.text-muted {
+    color: #bcbbbb;
+}
+
+.text-thin {
+    font-weight: 100;
+}
+
+.title-logo {
+    margin-top: 20px;
+}
+
+.title-super {
+    font-size: 60px;
+}
+
+.image-work{
+    padding-left: 60px;
+    padding-right: 60px;
+}
+
+

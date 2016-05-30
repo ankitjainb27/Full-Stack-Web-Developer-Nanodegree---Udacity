@@ -266,6 +266,11 @@ class Login(BlogHandler):
             msg = 'Invalid login'
             self.render('login-form.html', error = msg)
 
+class Profile(BlogHandler):
+
+    def get(self):
+        self.render('profile.html')
+
 class Logout(BlogHandler):
     def get(self):
         self.logout()
@@ -295,6 +300,7 @@ app = webapp2.WSGIApplication([('/', BlogFront),
                                ('/blog/newpost', NewPost),
                                ('/signup', Register),
                                ('/login', Login),
+                               ('/profile', Profile),
                                ('/logout', Logout),
                                ('/unit3/welcome', Unit3Welcome),
                                ],
