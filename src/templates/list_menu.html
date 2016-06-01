@@ -18,6 +18,9 @@
 <hr>
 {% for res in restaurant[0].menuitems %}
     <p>{{ res.name }}</p>
+    <p>{{ res.description }}</p>
+    <p>{{ res.price }}</p>
+    <p>{{ res.course }}</p>
     <a href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/">Edit</a><br>
 
     <a href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/delete/">Delete</a>

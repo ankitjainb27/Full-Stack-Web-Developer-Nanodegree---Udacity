@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, render_template, url_for, flash
+from flask import Blueprint, request, redirect, render_template, url_for, flash, jsonify
 from flask.views import MethodView
 from src.models import Restaurant, MenuItem
 from src import app
@@ -135,3 +135,17 @@ def deletemenu(restaurant_id, menu_id):
 @app.route('/')
 def start():
     return redirect('/restaurant/')
+
+
+@app.route('/restaurant/<int:restaurant_id>/menu/JSON/')
+def menujson(restaurant_id):
+    res = Restaurant.objects.get(restaurant_id=restaurant_id)
+    res1 = res.menuitems
+    return jsonify(MenuItem=[i.serialize for i in res1])
+
+
+@app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/JSON/')
+def menujson1(restaurant_id, menu_id):
+    restaurant = Restaurant.objects.filter(restaurant_id=restaurant_id)
+    menuitem = restaurant[0].menuitems.filter(menu_id=menu_id)
+    return jsonify(MenuItem=[menuitem[0].serialize])
