@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% if restaurant is defined %}
+    <form enctype="multipart/form-data" method="post" action="/restaurant/{{ restaurant[0].restaurant_id }}/">
+
+    <input name="_method" type="hidden" value="PUT">
+    <input name="newRestaurantName" type="text" placeholder="{{ restaurant[0].name }}">
+{% else %}
+    <form enctype="multipart/form-data" method="post" action="/restaurant/">
+
+    <input name="newRestaurantName" type="text" placeholder="New Restaurant Name">
+{% endif %}
+<input type="submit" value="Submit">
+</form>
+</body>
+</html>
