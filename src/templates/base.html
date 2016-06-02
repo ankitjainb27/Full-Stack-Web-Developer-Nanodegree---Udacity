@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Angular Material style sheet -->
+
+    <link rel="stylesheet" href=
+            {{ url_for('static', filename='css/bootstrap.min.css') }}>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>
+    <link href={{ url_for('static', filename='fonts/glyphicons-halflings-regular.svg') }}>
+    <title>Title</title>
+</head>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

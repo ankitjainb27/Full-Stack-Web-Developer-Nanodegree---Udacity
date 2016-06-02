@@ -1,0 +1,25 @@
+body {
+    background-color: lightcyan;
+}
+
+a, u {
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    color: black;
+}
+
+
+.button_full_width {
+    width: 100%;
+}
+
+.button_anchor {
+    color: white;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
+}

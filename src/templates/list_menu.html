@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{% with messages  = get_flashed_messages() %}
+{% extends "base.html" %}
+{% block content %}
+    {#{% with messages  = get_flashed_messages() %}
     {% if messages %}
     {% endif %}
     <ul>
@@ -13,18 +8,48 @@
             <li>{{ message }}</li>
         {% endfor %}
     </ul>
-{% endwith %}
-<a href="/menu/{{ restaurant[0].restaurant_id }}/new/">Add a new Menu</a>
-<hr>
-{% for res in restaurant[0].menuitems %}
-    <p>{{ res.name }}</p>
-    <p>{{ res.description }}</p>
-    <p>{{ res.price }}</p>
-    <p>{{ res.course }}</p>
-    <a href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/">Edit</a><br>
+{% endwith %}#}
 
-    <a href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/delete/">Delete</a>
-<hr>
-{% endfor %}
-</body>
-</html>
+    <div class="page-header vertical-align">
+        <div class="col-md-10">
+            <a href="/"><h1>Food Court</h1></a></div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary button_full_width"><a class="button_anchor text-center"
+                                                                               href="/menu/{{ restaurant[0].restaurant_id }}/new/"><span
+                    class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;</span>Add
+                a
+                new Menu</a></button>
+        </div>
+    </div>
+    <table class="table">
+        <tr
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Price</b></td>
+            <td><b>Course</b></td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% for res in restaurant[0].menuitems %}
+
+            <tr>
+                <td>{{ res.name }}</td>
+                <td>{{ res.description }}</td>
+                <td>{{ res.price }}</td>
+                <td>{{ res.course }}</td>
+                <td>
+                    <button type="button" class="btn btn-success button_full_width" href=""><a class="button_anchor"
+                                                                                               href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/"><span
+                            class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;</span>Edit</a></button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger button_full_width" href=""><a class="button_anchor"
+                                                                                              href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/delete/"><span
+                            class="glyphicon glyphicon-trash" aria-hidden="true">&nbsp;</span>Delete</a></button>
+                </td>
+            </tr>
+
+        {% endfor %}
+    </table>
+{% endblock %}
+

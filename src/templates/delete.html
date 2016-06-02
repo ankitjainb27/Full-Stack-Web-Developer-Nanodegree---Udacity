@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>Do you want to remove this restaurant</h2>
-<p>{{ restaurant[0].name }}</p>
-<form enctype="multipart/form-data" method="post" action="/restaurant/{{ restaurant[0].restaurant_id }}/delete/">
-    <input type="submit" value="Submit">
-</form>
-<a href="/restaurant/">Cancel</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+
+    <h2>Do you want to remove {{ restaurant[0].name }} restaurant</h2>
+    <form class="form-inline" enctype="multipart/form-data" method="post"
+          action="/restaurant/{{ restaurant[0].restaurant_id }}/delete/">
+        <button type="submit" class="btn btn-danger">Yes</button>
+        <button type="submit" class="btn btn-info"><a class="button_anchor" href="/restaurant/">Cancel</a></button>
+    </form>
+{% endblock %}

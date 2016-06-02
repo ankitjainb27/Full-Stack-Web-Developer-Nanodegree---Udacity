@@ -1,22 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-{% if restaurant is defined %}
-    <form enctype="multipart/form-data" method="post" action="/restaurant/{{ restaurant[0].restaurant_id }}/">
-
-    <input name="_method" type="hidden" value="PUT">
-    <input name="newRestaurantName" type="text" placeholder="{{ restaurant[0].name }}">
-{% else %}
-    <form enctype="multipart/form-data" method="post" action="/restaurant/">
-
-    <input name="newRestaurantName" type="text" placeholder="New Restaurant Name">
-{% endif %}
-<input type="submit" value="Submit">
-</form>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12"><h2>Add a new Restaurant to Food Court</h2></div>
+        <div class="col-md-12">
+            {% if restaurant is defined %}
+                <form class="form-inline" enctype="multipart/form-data" method="post"
+                      action="/restaurant/{{ restaurant[0].restaurant_id }}/">
+                <div class="form-group">
+                    <label>Edit </label>
+                    <input name="newRestaurantName"  class="form-control" type="text" placeholder="{{ restaurant[0].name }}">
+                </div>
+            {% else %}
+                <form class="form-inline" enctype="multipart/form-data" method="post" action="/restaurant/">
+                <div class="form-group">
+                    <label>Add </label>
+                    <input name="newRestaurantName"  class="form-control" type="text" placeholder="Restaurant Name">
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

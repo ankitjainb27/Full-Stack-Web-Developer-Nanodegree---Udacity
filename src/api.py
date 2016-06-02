@@ -11,7 +11,7 @@ class RestaurantView(MethodView):
     def get(self, restaurant_id):
         if restaurant_id is None:
             restaurant = Restaurant.objects.all()
-            flash("See all messages")
+            # flash("See all messages")
             return render_template('list.html', restaurant=restaurant)
         else:
             print restaurant_id
@@ -33,16 +33,12 @@ class RestaurantView(MethodView):
             restaurant.update(name=restaurant_name)
             return redirect('/restaurant/')
 
-    def delete(self, user_id):
-        # delete a single user
-        pass
-
 
 class MenuView(MethodView):
     def get(self, restaurant_id, menu_id):
         if menu_id is None:
             restaurant = Restaurant.objects.filter(restaurant_id=restaurant_id)
-            flash("Menu Items")
+            # flash("Menu Items")
             return render_template('list_menu.html', restaurant=restaurant)
         else:
             restaurant = Restaurant.objects.filter(restaurant_id=restaurant_id)
@@ -76,7 +72,7 @@ class MenuView(MethodView):
 user_view = RestaurantView.as_view('list')
 restaurants.add_url_rule('/restaurant/', defaults={'restaurant_id': None},
                          view_func=user_view, methods=['GET', ])
-restaurants.add_url_rule('/restaurant/', view_func=user_view, methods=['POST'])
+restaurants.add_url_rule('/restaurant/', defaults={'restaurant_id': None}, view_func=user_view, methods=['POST'])
 restaurants.add_url_rule('/restaurant/<int:restaurant_id>/', view_func=user_view,
                          methods=['GET', 'POST', ])
 
@@ -101,17 +97,17 @@ def delete(restaurant_id):
         return render_template('delete.html', restaurant=restaurant)
     else:
         res = Restaurant.objects.filter(restaurant_id=restaurant_id).delete()
-        if res:
-            flash("Successfully Deleted")
-        else:
-            flash("Not Deleted")
+        # if res:
+        #     flash("Successfully Deleted")
+        # else:
+        #     flash("Not Deleted")
         return redirect('/restaurant/')
 
 
 @app.route('/menu/<int:restaurant_id>/new/')
 def asd1(restaurant_id):
     restaurant = Restaurant.objects.filter(restaurant_id=restaurant_id)
-    return render_template('form.html', restaurant=restaurant)
+    return render_template('menu_form.html', restaurant=restaurant)
 
 
 @app.route('/menu/<int:restaurant_id>/<int:menu_id>/delete/', methods=['GET', 'POST'])
@@ -125,10 +121,10 @@ def deletemenu(restaurant_id, menu_id):
         res3 = (restaurant.menuitems.filter(menu_id=menu_id))
         res3.delete()
         res3.save()
-        if res3:
-            flash("Successfully Deleted Menu Item")
-        else:
-            flash("Not Deleted")
+        # if res3:
+        #     flash("Successfully Deleted Menu Item")
+        # else:
+        #     flash("Not Deleted")
         return redirect('/menu/' + str(restaurant_id) + '/')
 
 
