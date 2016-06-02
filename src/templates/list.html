@@ -9,35 +9,46 @@
                 <li>{{ message }}</li>
             {% endfor %}
         </ul>
-    {% endwith %}
-    #}
+    {% endwith %}#}
     <div class="page-header vertical-align">
-        <div class="col-md-9">
+        <div class="col-md-6">
             <h1>Food Court</h1></div>
         <div class="col-md-3">
+            {{ session['username'] }}
+            {% if 'username' not in session %}
+                <a href="/login/">Click Here to Log In</a>
+            {% else %}
+                <a href="/disconnect">Disconnecct</a>
+            {% endif %}
+        </div>
+        <div class="col-md-3">
             <button type="button" class="btn btn-primary button_full_width"><a class="button_anchor text-center"
-                                                                               href="/restaurant/new/"><span
-                    class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;</span>Add a
+                                                                               class="glyphicon glyphicon-plus"
+                                                                               aria-hidden="true">&nbsp;</span>Add a
                 Restaurant</a></button>
         </div>
     </div>
     {% for res in restaurant %}
-        <div class="row">
+        <div class="row vertical-align">
             <div class="col-md-8">
                 <h3 class="md-display-3"><a href="/menu/{{ res.restaurant_id }}/">{{ res.name }}</a></h3></div>
             <div class="col-md-2">
-                <button type="button" class="btn btn-success button_full_width"><a class="button_anchor"
-                                                                                   href="/restaurant/{{ res.restaurant_id }}/">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;</span> Edit</a>
-                </button>
+                {% if res.restaurant_user_id == user.user_id %}
+                    <button type="button" class="btn btn-success button_full_width"><a class="button_anchor"
+                                                                                       href="/restaurant/{{ res.restaurant_id }}/">
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;</span> Edit</a>
+                    </button>
+                {% endif %}
             </div>
             <div class="col-md-2">
-                <button type="button" class="btn btn-danger button_full_width" href=""><a class="button_anchor"
-                                                                                          href="/restaurant/{{ res.restaurant_id }}/delete/"><span
-                        class="glyphicon glyphicon-trash" aria-hidden="true">&nbsp;</span> Delete</a>
-                </button>
+                {% if res.restaurant_user_id == user.user_id %}
+                    <button type="button" class="btn btn-danger button_full_width" href=""><a class="button_anchor"
+                                                                                              href="/restaurant/{{ res.restaurant_id }}/delete/"><span
+                            class="glyphicon glyphicon-trash" aria-hidden="true">&nbsp;</span> Delete</a>
+                    </button>
+                {% endif %}
             </div>
-            <hr>
         </div>
+        <hr>
     {% endfor %}
 {% endblock %}

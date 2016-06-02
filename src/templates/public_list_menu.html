@@ -27,8 +27,6 @@
             <td><b>Description</b></td>
             <td><b>Price</b></td>
             <td><b>Course</b></td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
         </tr>
         {% for res in restaurant[0].menuitems %}
 
@@ -37,20 +35,6 @@
                 <td>{{ res.description }}</td>
                 <td>{{ res.price }}</td>
                 <td>{{ res.course }}</td>
-                <td>
-                    {% if res.menu_user_id == user.user_id %}
-                        <button type="button" class="btn btn-success button_full_width" href=""><a class="button_anchor"
-                                                                                                   href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/"><span
-                                class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;</span>Edit</a></button>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if res.menu_user_id == user.user_id %}
-                        <button type="button" class="btn btn-danger button_full_width" href=""><a class="button_anchor"
-                                                                                                  href="/menu/{{ restaurant[0].restaurant_id }}/{{ res.menu_id }}/delete/"><span
-                                class="glyphicon glyphicon-trash" aria-hidden="true">&nbsp;</span>Delete</a></button>
-                    {% endif %}
-                </td>
             </tr>
 
         {% endfor %}

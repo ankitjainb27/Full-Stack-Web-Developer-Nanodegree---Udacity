@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+
+    {#{% with messages  = get_flashed_messages() %}
+        {% if messages %}
+        {% endif %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endwith %}
+    #}
+    <div class="page-header vertical-align">
+        <div class="col-md-6">
+            <h1>Food Court</h1></div>
+        <div class="col-md-3">
+            <a href="/login/">Click Here to Log In</a>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-primary button_full_width"><a class="button_anchor text-center"
+                                                                               href="/restaurant/new/"><span
+                    class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;</span>Add a
+                Restaurant</a></button>
+        </div>
+    </div>
+    {% for res in restaurant %}
+        <div class="row vertical-align">
+            <div class="col-md-12">
+                <h3 class="md-display-3"><a href="/menu/{{ res.restaurant_id }}/">{{ res.name }}</a></h3></div>
+            <hr>
+        </div>
+    {% endfor %}
+{% endblock %}
