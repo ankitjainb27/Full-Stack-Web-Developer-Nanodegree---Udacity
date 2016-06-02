@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="row">
-        <div class="col-md-12"><h2>Add a new Menu Item to {{ restaurant[0].restaurant_id }}</h2></div>
+        <div class="col-md-12"><h2>Add a new Menu Item to {{ restaurant[0].name }}</h2></div>
         <div class="col-md-12">
             {% if menuitem is defined %}
                 <form class="form-inline" enctype="multipart/form-data" method="post"

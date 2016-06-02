@@ -12,7 +12,7 @@
 
     <div class="page-header vertical-align">
         <div class="col-md-10">
-            <a href="/"><h1>Food Court</h1></a></div>
+            <a href="/"><h1>{{ restaurant[0].name }}</h1></a></div>
         <div class="col-md-2">
             <button type="button" class="btn btn-primary button_full_width"><a class="button_anchor text-center"
                                                                                href="/menu/{{ restaurant[0].restaurant_id }}/new/"><span
@@ -22,13 +22,13 @@
         </div>
     </div>
     <table class="table">
-        <tr
+        <tr>
             <td><b>Name</b></td>
             <td><b>Description</b></td>
             <td><b>Price</b></td>
             <td><b>Course</b></td>
-            <td></td>
-            <td></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
         </tr>
         {% for res in restaurant[0].menuitems %}
 
