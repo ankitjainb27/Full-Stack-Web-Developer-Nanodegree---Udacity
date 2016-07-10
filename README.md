@@ -6,8 +6,9 @@ Link to Nanodegree - https://www.udacity.com/course/full-stack-web-developer-nan
 Go to - http://localhost:5000/ to see all restaurants and their menu items
 
 # JSON Endpoints
-1. All Menus of a restaurant - http://localhost:5000/restaurant/<int:restaurant_id>/menu/JSON/
-2. Single Menu of a restaurant - http://localhost:5000/restaurant/<int:restaurant_id>/menu/<int:menu_id>/JSON/
+1. All Menus of a restaurant - http://localhost:5000/restaurant/<int:restaurant_id>/menu/JSON/, For example - http://localhost:5000/restaurant/1/menu/JSON/
+
+2. Single Menu of a restaurant - http://localhost:5000/restaurant/<int:restaurant_id>/menu/<int:menu_id>/JSON/, For example - http://localhost:5000/restaurant/1/menu/1/JSON/
 
 # Installation Steps
 Step1 - Install pip Make a virtualenv for this project pip install virtualenv virtualenv myproject source myproject/bin/activate
