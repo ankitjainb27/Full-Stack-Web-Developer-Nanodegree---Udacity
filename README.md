@@ -9,5 +9,3 @@ SignUp - https://cedar-heaven-122409.appspot.com/signup
 Login - https://cedar-heaven-122409.appspot.com/login
 
 New Post - https://cedar-heaven-122409.appspot.com/blog/newpost
-
-https://cedar-heaven-122409.appspot.com/blog/5707702298738688
