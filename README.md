@@ -15,6 +15,8 @@ source myproject/bin/activate
 Install the required dependencies: pip install -r requirements.txt
 
 3. Step3 -
+Installation steps for mongodb - https://docs.mongodb.com/manual/installation/
+
 Turn on mongodb by running mongod command in terminal
 
 4. Step4 -
