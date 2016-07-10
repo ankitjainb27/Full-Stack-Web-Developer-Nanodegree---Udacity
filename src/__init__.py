@@ -7,8 +7,4 @@ app.config["SECRET_KEY"] = "KeepThisS3cr3t1"
 
 db = MongoEngine(app)
 
-# tournament.add()
-# print tournament.deletePlayers()
-# print tournament.registerPlayer("Chandra Nalaar5")
-# tournament.swissPairings()
 import tournament_test
