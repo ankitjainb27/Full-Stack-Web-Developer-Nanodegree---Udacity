@@ -1,6 +1,6 @@
 body {
     font-family: 'Lato', sans-serif;
-    color: #747704;
+    color: #2d3c49;
     font-weight: 300;
 }
 
@@ -9,7 +9,7 @@ body {
 }
 
 .text-muted {
-    color: #bcbbbb;
+    color: #7d97ad;
 }
 
 .text-thin {
@@ -24,9 +24,17 @@ body {
     font-size: 60px;
 }
 
-.image-work{
+.image {
     padding-left: 60px;
     padding-right: 60px;
+    width: 100%;
+}
+
+.separator {
+    height: 5px;
+    width: 100%;
+    background: #7d97ad;
+    margin-bottom: 15px;
 }
 
 
