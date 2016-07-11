@@ -1,6 +1,10 @@
 # Project: Multi User Blog
-part of Full Stack Nanodegree on Udacity.com
+Part of Full Stack Nanodegree on Udacity.com
+
 Link to Nanodegree - https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004
+
+# My blog web application link - 
+https://cedar-heaven-122409.appspot.com/
 
 # Project Scope
 In this project I built a multi user blog where users can sign in and post blog posts as well as 'Comment' on other posts made on the blog.
@@ -18,7 +22,7 @@ I hosted this blog on Google App Engine and created an authentication system for
 9. View your project at unique-name.appspot.com.
 
 
-# Setup/Installation and Deploying on it locally.
+# Setup/Installation and Deploying it locally.
 1. Install Python if necessary.
 2. Install Google App Engine SDK.
 3. Open GoogleAppEngineLauncher.
@@ -27,8 +31,7 @@ I hosted this blog on Google App Engine and created an authentication system for
 8. Click “Run” in GoogleAppEngineLauncher
 9. Visit localhost:Port in your favorite browser, where Port is the number listed in GoogleAppEngineLauncher’s table under the column Port.
 
-# My blog web application link - 
-https://cedar-heaven-122409.appspot.com/
+# Other links to my blog - 
 
 Blog - https://cedar-heaven-122409.appspot.com/blog
 
