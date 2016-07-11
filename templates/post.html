@@ -39,10 +39,6 @@
                 {% for comment in p.comments %}
 
                     <li>{{ comment }}
-                        {% if comment in user.user_comments %}
-                            <a href="/comment/edit/{{ p.key().id() }}">Edit</a>
-                            <a href="/comment/delete/{{ p.key().id() }}">Delete</a>
-                        {% endif %}
                     </li>
 
                 {% endfor %}
