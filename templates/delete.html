@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if post %}
+        <h2>Are you sure you want to delete the post?</h2>
+        <form method="post">
+            <input type="submit">
+
+        </form>
+        <button><a href="/">Cancel</a></button>
+    {% endif %}
+{% endblock %}

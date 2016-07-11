@@ -1,15 +1,53 @@
 <div class="post">
-  <div class="post-heading">
-    <div class="post-title">
-      {{p.subject}}
+    <div class="post-heading">
+        <div class="post-title">
+            <a href='/blog/{{ p.key().id() }}'>{{ p.subject }}</a> by {{ p.name }}
+        </div>
+
+        <div class="post-date">
+            {{ p.created.strftime("%b %d, %Y") }}
+        </div>
     </div>
 
-    <div class="post-date">
-      {{p.created.strftime("%b %d, %Y")}}
-    </div>
-  </div>
+    <div class="post-content">
+        {{ p._render_text | safe }}
 
-  <div class="post-content">
-    {{p._render_text | safe}}
-  </div>
+    </div>
+
+    {% if user and user.name == p.name %}
+        <a href="/blog/edit/{{ p.key().id() }}">Edit</a>
+        <a href="/blog/delete/{{ p.key().id() }}">Delete</a>
+        <p>{{ p.like_count }} Likes</p>
+
+    {% else %}
+        {% if  p.key().id() not in user.like_post_id %}
+            <form method="post">
+                <input type="text" value="{{ p.key().id() }}" name="post_id" hidden>
+                <input type="submit" value="Like">
+            </form>
+        {% else %}
+            <p>You liked the post</p>
+        {% endif %}
+
+        <p>{{ p.like_count }} Likes</p>
+    {% endif %}
+
+    <div class="post-content">
+        {% if p.comments %}
+            <p>Comments</p>
+            <ul>
+                {% for comment in p.comments %}
+
+                    <li>{{ comment }}
+                        {% if comment in user.user_comments %}
+                            <a href="/comment/edit/{{ p.key().id() }}">Edit</a>
+                            <a href="/comment/delete/{{ p.key().id() }}">Delete</a>
+                        {% endif %}
+                    </li>
+
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
 </div>

@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {{post.render() | safe}}
+    {{ post.render(user) | safe }}
+
+    <br>
+    <form method="post">
+        <label>
+            <div>Comment Content</div>
+            <textarea name="content"></textarea>
+        </label>
+
+        <div class="error">{{ error }}</div>
+
+        <input type="submit">
+    </form>
+    <button><a href="/">Cancel</a></button>
 {% endblock %}

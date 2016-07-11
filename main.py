@@ -75,7 +75,7 @@ class MainPage(BlogHandler):
         self.write('Hello, Udacity!')
 
 
-##### user stuff
+# User Login functionality including functions to make password secure.
 def make_salt(length=5):
     return ''.join(random.choice(letters) for x in xrange(length))
 
@@ -100,6 +100,8 @@ class User(db.Model):
     name = db.StringProperty(required=True)
     pw_hash = db.StringProperty(required=True)
     email = db.StringProperty()
+    like_post_id = db.ListProperty(int)
+    user_comments = db.ListProperty(str)
 
     @classmethod
     def by_id(cls, uid):
@@ -125,7 +127,7 @@ class User(db.Model):
             return u
 
 
-##### blog stuff
+# Blog related functionalities including Post and NewPost
 
 def blog_key(name='default'):
     return db.Key.from_path('blogs', name)
@@ -133,68 +135,139 @@ def blog_key(name='default'):
 
 class Post(db.Model):
     subject = db.StringProperty(required=True)
+    name = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
+    like_count = db.IntegerProperty(default=0)
+    comments = db.ListProperty(str)
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
 
-    def render(self):
+    def render(self, user):
         self._render_text = self.content.replace('\n', '<br>')
-        return render_str("post.html", p=self)
+        return render_str("post.html", p=self, user=user)
 
 
 class BlogFront(BlogHandler):
     def get(self):
-        posts = greetings = Post.all().order('-created')
+        posts = Post.all().order('-created')
         self.render('front.html', posts=posts)
+
+    def post(self):
+        if not self.user:
+            return self.redirect('/login')
+        subject = self.request.get('post_id')
+        print subject
+        u = User.by_name(self.user.name)
+        u.like_post_id = u.like_post_id + [int(subject)]
+        u.put()
+        key = db.Key.from_path('Post', int(subject), parent=blog_key())
+        post = db.get(key)
+        post.like_count = post.like_count + 1
+        post.put()
+        return self.redirect('/blog')
 
 
 class PostPage(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
-
         if not post:
             self.error(404)
-            return
+            return self.render("404.html")
 
         self.render("permalink.html", post=post)
 
+    def post(self, post_id):
+        if not self.user:
+            return self.redirect('/login')
+
+        content = self.request.get('content')
+
+        if content:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            post.comments = post.comments + [content]
+            post.put()
+
+            u = User.by_name(self.user.name)
+            u.user_comments = u.user_comments + [content]
+            u.put()
+            return self.redirect('/blog/%s' % post_id)
+        else:
+            error = "content, please!"
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            self.render("permalink.html", post=post, error=error)
+
+
+class EditPost(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        if not post:
+            self.error(404)
+            return self.render("404.html")
+
+        self.render("newpost.html", post=post)
+
+    def post(self, post_id):
+        if not self.user:
+            return self.redirect('/blog')
+
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+        if subject and content:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            post.subject = subject
+            post.content = content
+            post.put()
+            return self.redirect('/blog/%s' % post_id)
+        else:
+            error = "subject and content, please!"
+            self.render("newpost.html", subject=subject, content=content, error=error)
+
+class DeletePost(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        if not post:
+            self.error(404)
+            return self.render("404.html")
+
+        self.render("delete.html", post=post)
+
+    def post(self, post_id):
+        if not self.user:
+            return self.redirect('/blog')
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+        post.delete()
+        return self.redirect('/blog')
 
 class NewPost(BlogHandler):
     def get(self):
         if self.user:
             self.render("newpost.html")
         else:
-            self.redirect("/login")
+            return self.redirect("/login")
 
     def post(self):
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/blog')
 
         subject = self.request.get('subject')
         content = self.request.get('content')
 
         if subject and content:
-            p = Post(parent=blog_key(), subject=subject, content=content)
+            p = Post(parent=blog_key(), subject=subject, content=content, name=self.user.name)
             p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
+            return self.redirect('/blog/%s' % str(p.key().id()))
         else:
             error = "subject and content, please!"
             self.render("newpost.html", subject=subject, content=content, error=error)
-
-
-###### Unit 2 HW's
-class Rot13(BlogHandler):
-    def get(self):
-        self.render('rot13-form.html')
-
-    def post(self):
-        rot13 = ''
-        text = self.request.get('text')
-        if text:
-            rot13 = text.encode('rot13')
-
-        self.render('rot13-form.html', text=rot13)
 
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -256,11 +329,6 @@ class Signup(BlogHandler):
         raise NotImplementedError
 
 
-class Unit2Signup(Signup):
-    def done(self):
-        self.redirect('/unit2/welcome?username=' + self.username)
-
-
 class Register(Signup):
     def done(self):
         # make sure the user doesn't already exist
@@ -273,7 +341,7 @@ class Register(Signup):
             u.put()
 
             self.login(u)
-            self.redirect('/blog')
+            return self.redirect('/blog')
 
 
 class Login(BlogHandler):
@@ -287,51 +355,26 @@ class Login(BlogHandler):
         u = User.login(username, password)
         if u:
             self.login(u)
-            self.redirect('/blog')
+            return self.redirect('/blog')
         else:
             msg = 'Invalid login'
             self.render('login-form.html', error=msg)
 
 
-class Profile(BlogHandler):
-    def get(self):
-        self.render('profile.html')
-
-
 class Logout(BlogHandler):
     def get(self):
         self.logout()
-        self.redirect('/blog')
-
-
-class Unit3Welcome(BlogHandler):
-    def get(self):
-        if self.user:
-            self.render('welcome.html', username=self.user.name)
-        else:
-            self.redirect('/signup')
-
-
-class Welcome(BlogHandler):
-    def get(self):
-        username = self.request.get('username')
-        if valid_username(username):
-            self.render('welcome.html', username=username)
-        else:
-            self.redirect('/unit2/signup')
+        return self.redirect('/blog')
 
 
 app = webapp2.WSGIApplication([('/', BlogFront),
-                               ('/unit2/rot13', Rot13),
-                               ('/unit2/signup', Unit2Signup),
-                               ('/unit2/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/newpost', NewPost),
+                               ('/blog/edit/([0-9]+)', EditPost),
+                               ('/blog/delete/([0-9]+)', DeletePost),
                                ('/signup', Register),
                                ('/login', Login),
-                               ('/profile', Profile),
                                ('/logout', Logout),
-                               ('/unit3/welcome', Unit3Welcome),
                                ],
                               debug=True)
