@@ -15,7 +15,8 @@ Step1 -
 
 Install pip 
 
-Make a virtualenv for this project, using the following steps -  
+Make a virtualenv for this project, using the following steps -
+
 1. pip install virtualenv 
 2. virtualenv myproject 
 3. source myproject/bin/activate
