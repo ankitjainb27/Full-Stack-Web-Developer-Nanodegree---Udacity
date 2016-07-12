@@ -228,11 +228,43 @@ class EditPost(BlogHandler):
             error = "subject and content, please!"
             self.render("newpost.html", subject=subject, content=content, error=error)
 
+
+class EditComment(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+        comment = self.request.get('comment')
+        if not post:
+            self.error(404)
+            return self.render("404.html")
+
+        self.render("editcomment.html", post=post, comment=comment)
+
+    def post(self, post_id):
+        if not self.user:
+            return self.redirect('/blog/%s' % post_id)
+
+        old_comment = self.request.get('old_comment')
+        comment = self.request.get('new_comment')
+        print comment
+        print old_comment
+        if comment and old_comment:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            post.comments = [word.replace(old_comment, comment) for word in post.comments]
+            post.put()
+            u = User.by_name(self.user.name)
+            u.user_comments = [word.replace(old_comment, comment) for word in u.user_comments]
+            u.put()
+            return self.redirect('/blog/%s' % post_id)
+        else:
+            return self.redirect('/blog/%s' % post_id)
+
+
 class DeletePost(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
-
         if not post:
             self.error(404)
             return self.render("404.html")
@@ -246,6 +278,37 @@ class DeletePost(BlogHandler):
         post = db.get(key)
         post.delete()
         return self.redirect('/blog')
+
+
+class DeleteComment(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+        comment = self.request.get('comment')
+        if not post:
+            self.error(404)
+            return self.render("404.html")
+
+        self.render("deletecomment.html", post=post, comment = comment)
+
+    def post(self, post_id):
+        if not self.user:
+            return self.redirect('/blog/%s' % post_id)
+
+        old_comment = self.request.get('old_comment')
+        print old_comment
+        if old_comment:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            try:
+                post.comments.remove(old_comment)
+                post.put()
+                u = User.by_name(self.user.name)
+                u.user_comments.remove(old_comment)
+                u.put()
+            except:
+                return self.redirect('/blog/%s' % post_id)
+        return self.redirect('/blog/%s' % post_id)
 
 class NewPost(BlogHandler):
     def get(self):
@@ -372,7 +435,9 @@ app = webapp2.WSGIApplication([('/', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/newpost', NewPost),
                                ('/blog/edit/([0-9]+)', EditPost),
+                               ('/comment/edit/([0-9]+)', EditComment),
                                ('/blog/delete/([0-9]+)', DeletePost),
+                               ('/comment/delete/([0-9]+)', DeleteComment),
                                ('/signup', Register),
                                ('/login', Login),
                                ('/logout', Logout),
