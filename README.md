@@ -12,11 +12,11 @@ Go to - http://localhost:5000/ to see all restaurants and their menu items
 
 # Installation Steps
 1. Step1 - Install pip 
-2. Steps2 - Install Virtual Environment - pip install virtualenv 
-3. Steps3 - Make a virtualenv for this project - virtualenv myproject
-4. Steps4 - start using the virtual environment - source myproject/bin/activate
-5. Steps5 - Install the required dependencies: pip install -r requirements.txt
-6. Steps6 - Installation steps for mongodb - https://docs.mongodb.com/manual/installation/
-7. Steps7 - Turn on mongodb by running mongod command in terminal
-8. Steps8 - Run the server by first going in src folder and then using the command - python manage.py runserver
-9. Steps9 - Then go to http://localhost:5000/ to see all restaurants and their menu items
+2. Step2 - Install Virtual Environment - pip install virtualenv 
+3. Step3 - Make a virtualenv for this project - virtualenv myproject
+4. Step4 - start using the virtual environment - source myproject/bin/activate
+5. Step5 - Install the required dependencies: pip install -r requirements.txt
+6. Step6 - Installation steps for mongodb - https://docs.mongodb.com/manual/installation/
+7. Step7 - Turn on mongodb by running mongod command in terminal
+8. Step8 - Run the server by first going in src folder and then using the command - python manage.py runserver
+9. Step9 - Then go to http://localhost:5000/ to see all restaurants and their menu items
