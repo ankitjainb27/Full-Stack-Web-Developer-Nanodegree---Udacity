@@ -22,10 +22,13 @@
             {% endif %}
         </div>
         <div class="col-md-3">
-            <button type="button" class="btn btn-primary button_full_width"><a class="button_anchor text-center"
-                                                                               class="glyphicon glyphicon-plus"
-                                                                               aria-hidden="true">&nbsp;</span>Add a
-                Restaurant</a></button>
+            <button type="button" class="btn btn-primary button_full_width">
+                <a class="button_anchor text-center" href="/restaurant/new/">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true">
+                        &nbsp;
+                    </span>Add a Restaurant
+                </a>
+            </button>
         </div>
     </div>
     {% for res in restaurant %}

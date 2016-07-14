@@ -22,19 +22,16 @@ menu = Blueprint('menu', __name__, template_folder='templates')
 
 class RestaurantView(MethodView):
     def get(self, restaurant_id):
-        print 'came'
         if restaurant_id is None:
             restaurant = Restaurant.objects.all()
             if 'username' not in session:
                 return render_template('public_list.html', restaurant=restaurant)
             else:
-                print session['username']
                 return render_template('list.html', restaurant=restaurant, user=getUserInfo(session['user_id']),
                                        session=session)
         else:
             if 'username' not in session:
                 return redirect('/login/')
-            print restaurant_id
             restaurant = Restaurant.objects.filter(restaurant_id=restaurant_id)
             return render_template('form.html', restaurant=restaurant)
 
@@ -49,7 +46,6 @@ class RestaurantView(MethodView):
                 return redirect('/restaurant/')
             return render_template('form.html')
         else:
-            print restaurant_id
             restaurant_name = request.form['newRestaurantName']
             restaurant = Restaurant.objects.filter(restaurant_id=restaurant_id)
             restaurant.update(name=restaurant_name)
@@ -77,23 +73,28 @@ class MenuView(MethodView):
             if 'username' not in session:
                 return redirect('/login/')
             menu_name = request.form['newMenuName']
+            menu_description = request.form['newMenuDescription']
+            menu_price = request.form['newMenuPrice']
+            menu_course = request.form['newMenuCourse']
             restaurant = Restaurant.objects.get(restaurant_id=restaurant_id)
-            print menu_name
             if menu_name:
-                res = MenuItem(name=request.form['newMenuName'], menu_user_id=session['user_id'])
+                res = MenuItem(name=request.form['newMenuName'], description=menu_description,
+                               price=menu_price, course=menu_course, menu_user_id=session['user_id'])
                 restaurant.menuitems.append(res)
                 restaurant.save()
                 return redirect('/menu/' + str(restaurant_id) + '/')
             return render_template('menu_form.html', restaurant=restaurant)
         else:
-            print restaurant_id
-            print menu_id
-
             menu_name = request.form['newMenuName']
-            print menu_name
+            menu_description = request.form['newMenuDescription']
+            menu_price = request.form['newMenuPrice']
+            menu_course = request.form['newMenuCourse']
             restaurant = Restaurant.objects.get(restaurant_id=restaurant_id)
             res3 = (restaurant.menuitems.filter(menu_id=menu_id))
             res3.update(name=menu_name)
+            res3.update(description=menu_description)
+            res3.update(price=menu_price)
+            res3.update(course=menu_course)
             res3.save()
             return redirect('/menu/' + str(restaurant_id) + '/')
 
@@ -115,7 +116,7 @@ menu.add_url_rule('/menu/<int:restaurant_id>/<int:menu_id>/', view_func=menu_vie
 
 
 @app.route('/restaurant/new/')
-def asd():
+def new_restaurant():
     if 'username' not in session:
         return redirect('/login/')
     return render_template('form.html')
@@ -138,7 +139,7 @@ def delete(restaurant_id):
 
 
 @app.route('/menu/<int:restaurant_id>/new/')
-def asd1(restaurant_id):
+def new_menu_item(restaurant_id):
     if 'username' not in session:
         return redirect('/login/')
     restaurant = Restaurant.objects.filter(restaurant_id=restaurant_id)
@@ -188,7 +189,6 @@ def menujson1(restaurant_id, menu_id):
 def login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     session['state'] = state
-    print state
     return render_template("login.html", STATE=state)
 
 
@@ -236,7 +236,6 @@ def gconnect():
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -276,7 +275,6 @@ def gconnect():
     output += session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % session['username'])
-    print "done!"
     return output
 
     # DISCONNECT - Revoke a current user's token and reset their session
@@ -285,19 +283,13 @@ def gconnect():
 @app.route('/gdisconnect/')
 def gdisconnect():
     access_token = session['access_token']
-    print 'In gdisconnect access token is %s', access_token
-    print 'User name is: '
-    print session['username']
     if access_token is None:
-        print 'Access Token is None'
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print 'result is '
-    print result
     if result['status'] == '200':
         del session['access_token']
         del session['gplus_id']
@@ -321,7 +313,6 @@ def fbconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     access_token = request.data
-    print "access token received %s " % access_token
 
     app_id = json.loads(open(os.path.join(
         os.path.dirname(os.path.abspath(__file__)), 'fb_client_secrets.json'), 'r').read())[
@@ -342,8 +333,6 @@ def fbconnect():
     url = 'https://graph.facebook.com/v2.4/me?%s&fields=name,id,email' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-    # print "url sent for API access:%s"% url
-    # print "API JSON result: %s" % result
     data = json.loads(result)
     session['provider'] = 'facebook'
     session['username'] = data["name"]

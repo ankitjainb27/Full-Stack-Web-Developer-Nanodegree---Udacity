@@ -3,22 +3,70 @@
     <div class="row">
         <div class="col-md-12"><h2>Add a new Menu Item to {{ restaurant[0].name }}</h2></div>
         <div class="col-md-12">
-            {% if menuitem is defined %}
-                <form class="form-inline" enctype="multipart/form-data" method="post"
-                      action="/menu/{{ restaurant[0].restaurant_id }}/{{ menuitem[0].menu_id }}/">
-                <div class="form-group">
+
+            <form class="form-horizontal" enctype="multipart/form-data" method="post"
+                    {% if menuitem is defined %}
+                  action="/menu/{{ restaurant[0].restaurant_id }}/{{ menuitem[0].menu_id }}/"
+                    {% else %}
+                  action="/menu/{{ restaurant[0].restaurant_id }}/"{% endif %}>
+                {% if menuitem is defined %}
                     <label>Edit </label>
-                    <input class="form-control" name="newMenuName" type="text" placeholder="{{ menuitem[0].name }}">
-                </div>
-            {% else %}
-                <form class="form-inline" enctype="multipart/form-data" method="post"
-                      action="/menu/{{ restaurant[0].restaurant_id }}/">
+                {% else %}
+                    <label>Add Information of new Menu Item</label>
+                {% endif %}
                 <div class="form-group">
-                    <label>Add </label>
-                    <input class="form-control" name="newMenuName" type="text" placeholder="New Menu Name">
+
+                    <div class="col-md-6">
+                        <input class="form-control" name="newMenuName" type="text"
+                               placeholder={% if menuitem is defined and menuitem[0].name %}
+                                   "{{ menuitem[0].name }}"
+                               {% else %}
+                                   "Menu Name"
+                               {% endif %} required>
+                    </div>
                 </div>
-            {% endif %}
-            <button type="submit" class="btn btn-success">Submit</button>
+                <div class="form-group">
+
+                    <div class="col-md-6">
+                        <textarea class="form-control" name="newMenuDescription" type="text" rows="3"
+                                  placeholder={% if menuitem is defined and menuitem[0].description %} "{{ menuitem[0].description }}" {% else %}
+                                      "Menu Description" {% endif %} required></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+
+                    <div class="col-md-6">
+                        <input class="form-control" name="newMenuPrice" type="text"
+                               placeholder={% if menuitem is defined and menuitem[0].price %} {{ menuitem[0].price }} {% else %}"Menu Price (please put $ in front)"{% endif %}
+                               required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-6">
+                        <select class="form-control" name="newMenuCourse">
+                            <option value="Entree" {% if menuitem is defined and menuitem[0].course == "Entree" %}
+                                    selected {% endif %}>Entree
+                            </option>
+                            <option value="Appetizer" {% if menuitem is defined and menuitem[0].course == "Appetizer" %}
+                                    selected {% endif %}>Appetizer
+                            </option>
+                            <option value="Beverage" {% if menuitem is defined and menuitem[0].course == "Beverage" %}
+                                    selected {% endif %}>Beverage
+                            </option>
+                            <option value="Dessert" {% if menuitem is defined and menuitem[0].course == "Dessert" %}
+                                    selected {% endif %}>Dessert
+                            </option>
+                        </select>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
