@@ -44,22 +44,13 @@ def registerPlayer(name):
 def playerStandings():
     player = Player.objects.all()
     playerList = list()
-    pipeline = [
-        {'$group':
-             {'_id': '$winner',
-              'number': {'$sum': 1}
-              }
-         }]
-    match = Match.objects.aggregate(*pipeline)
-    list1 = list(match)
-    pipeline = [
-        {'$group':
-             {'_id': '$loser',
-              'number': {'$sum': 1}
-              }
-         }]
-    match = Match.objects.aggregate(*pipeline)
-    list2 = list(match)
+    match = Match._get_collection().aggregate([{'$group': {'_id': '$winner', 'number': {'$sum': 1}}}])
+    # print match
+    list1 = match['result']
+    # list1 = list(match)
+    match = Match._get_collection().aggregate([{'$group': {'_id': '$loser', 'number': {'$sum': 1}}}])
+    list2 = match['result']
+    # list2 = list(match)
     for item in player:
         winner = 0
         matches = 0
