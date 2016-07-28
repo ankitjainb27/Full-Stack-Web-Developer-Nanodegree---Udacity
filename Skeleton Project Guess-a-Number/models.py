@@ -16,19 +16,23 @@ class User(ndb.Model):
 
 class Game(ndb.Model):
     """Game object"""
-    target = ndb.IntegerProperty(required=True)
+    target = ndb.StringProperty(required=True)
     attempts_allowed = ndb.IntegerProperty(required=True)
     attempts_remaining = ndb.IntegerProperty(required=True, default=5)
     game_over = ndb.BooleanProperty(required=True, default=False)
+    game_cancel = ndb.BooleanProperty(required=True, default=False)
+    game_history = ndb.StringProperty(repeated=True)
+    alphabets_history = ndb.StringProperty(repeated=True)
     user = ndb.KeyProperty(required=True, kind='User')
 
+
+
     @classmethod
-    def new_game(cls, user, min, max, attempts):
+    def new_game(cls, user, attempts):
         """Creates and returns a new game"""
-        if max < min:
-            raise ValueError('Maximum must be greater than minimum')
+        word_list = ["hug", "bag", "dew", "fry"]
         game = Game(user=user,
-                    target=random.choice(range(1, max + 1)),
+                    target=random.choice(word_list),
                     attempts_allowed=attempts,
                     attempts_remaining=attempts,
                     game_over=False)
@@ -39,10 +43,29 @@ class Game(ndb.Model):
         """Returns a GameForm representation of the Game"""
         form = GameForm()
         form.urlsafe_key = self.key.urlsafe()
-        form.user_name = self.user.get().name
         form.attempts_remaining = self.attempts_remaining
         form.game_over = self.game_over
         form.message = message
+        form.user_name = self.user.get().name
+        # TODO  - Remove target, game_history and game_cancel
+        form.target = self.target
+        form.game_history = self.game_history
+        form.game_cancel = self.game_cancel
+        return form
+
+    def to_form_with_history(self, message):
+        """Returns a GameForm representation of the Game"""
+        form = GameForm()
+        form.urlsafe_key = self.key.urlsafe()
+        form.attempts_remaining = self.attempts_remaining
+        form.game_over = self.game_over
+        form.message = message
+        form.user_name = self.user.get().name
+        # TODO  - Remove target
+        form.target = self.target
+        form.game_history = self.game_history
+        form.alphabets_history = self.alphabets_history
+        form.game_cancel = self.game_cancel
         return form
 
     def end_game(self, won=False):
@@ -75,19 +98,21 @@ class GameForm(messages.Message):
     game_over = messages.BooleanField(3, required=True)
     message = messages.StringField(4, required=True)
     user_name = messages.StringField(5, required=True)
+    target = messages.StringField(6, required=True)
+    game_history = messages.StringField(7, repeated=True)
+    alphabets_history = messages.StringField(9, repeated=True)
+    game_cancel = messages.BooleanField(8, required=True)
 
 
 class NewGameForm(messages.Message):
     """Used to create a new game"""
     user_name = messages.StringField(1, required=True)
-    min = messages.IntegerField(2, default=1)
-    max = messages.IntegerField(3, default=10)
-    attempts = messages.IntegerField(4, default=5)
+    attempts = messages.IntegerField(2, default=5)
 
 
 class MakeMoveForm(messages.Message):
     """Used to make a move in an existing game"""
-    guess = messages.IntegerField(1, required=True)
+    guess = messages.StringField(1, required=True)
 
 
 class ScoreForm(messages.Message):
