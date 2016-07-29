@@ -133,7 +133,8 @@ class GuessANumberApi(remote.Service):
             else:
                 game.game_cancel = True
                 game.put()
-                return game.to_form_with_history('Game Cancelled')
+                return game.to_form_with_history('Game Cancegits'
+                                                 'lled')
         else:
             raise endpoints.NotFoundException('Game not found!')
 
