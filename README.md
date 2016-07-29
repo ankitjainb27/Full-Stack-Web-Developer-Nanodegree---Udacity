@@ -64,6 +64,22 @@ Score is kept when the game is over. It is stored if the user, won or lost the g
     - Returns: GameForm with current game state.
     - Description: Returns the current state of a game.
 
+ - **get_game_history**
+    - Path: 'game/game_history/{urlsafe_game_key}'
+    - Method: GET
+    - Parameters: urlsafe_game_key
+    - Returns: The history of the game containing steps-by-steps alphabet guesses,
+    the state of the word and the state of the game (Won, Lost or Turns Remaining)
+    - Description: Return the game history of a particular game.
+
+ - **cancel_game**
+    - Path: 'gamecancel/{urlsafe_game_key}'
+    - Method: PUT
+    - Parameters: urlsafe_game_key
+    - Returns: GameForm with cancelled game state.
+    - Description: """Cancel a particular game"""
+
+
  - **make_move**
     - Path: 'game/{urlsafe_game_key}'
     - Method: PUT
@@ -78,6 +94,26 @@ Score is kept when the game is over. It is stored if the user, won or lost the g
     - Parameters: None
     - Returns: ScoreForms.
     - Description: Returns all Scores in the database (unordered).
+
+ - **get_high_scores**
+    - Path: 'scores_high'
+    - Method: GET
+    - Parameters: number_of_results
+    - Returns: ScoreForms.
+    - Description: Return high scores.
+    High score includes entries that won and in descending order of no. of guesses made
+
+ - **get_user_rankings**
+    - Path: 'scores_user_ranking'
+    - Method: GET
+    - Parameters: None
+    - Returns: ScoreForms.
+    - Description: Return a List of tuples of user_name and performance in descending order.
+    High score includes entries that won and in descending order based on weighted score.
+    1) User ranking is based on weighted score
+    2) To calculate it the formula
+    3) First we get a state, which is 1 for win and 0 for loss
+    4) Final formula is = sum(state*guess)/(sum(guess))
 
  - **get_user_scores**
     - Path: 'scores/user/{user_name}'
