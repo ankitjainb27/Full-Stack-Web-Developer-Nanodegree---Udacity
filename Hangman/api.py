@@ -4,7 +4,6 @@ This can also contain game logic. For more complex games it would be wise to
 move game logic to another file. Ideally the API will be simple, concerned
 primarily with communication to/from the API's users."""
 
-import logging
 import re
 import endpoints
 from protorpc import remote, messages
@@ -133,7 +132,7 @@ class GuessANumberApi(remote.Service):
                 game.game_cancel = True
                 game.game_over = True
                 game.put()
-                return endpoints.ForbiddenException('Illegal action: Game is already over.')
+                return game.to_form_with_history('Game Cancelled')
         else:
             raise endpoints.NotFoundException('Game not found!')
 
@@ -232,15 +231,18 @@ class GuessANumberApi(remote.Service):
             if not ranking.get(str(score.user.get().name)):
                 state['guesses'] = score.guesses
                 if (score.won):
-                    state['perf'] = 1 / (state['guesses'] * 1.0)
+                    state['perf'] = 1.0
                 else:
-                    state['perf'] = 0
+                    state['perf'] = 0.0
             else:
                 current_state = ranking.get(score.user.get().name)
                 state['guesses'] = score.guesses + current_state['guesses']
                 if (score.won):
-                    state['perf'] = (score.guesses + current_state['guesses'] * current_state['perf']) / (
-                        state['guesses'] * 1.0)
+                    if not state['guesses'] == 0:
+                        state['perf'] = (score.guesses + current_state['guesses'] * current_state['perf']) / (
+                            state['guesses'] * 1.0)
+                    else:
+                        state['perf'] = 1.0
                 else:
                     state['perf'] = (current_state['guesses'] * current_state['perf']) / (state['guesses'] * 1.0)
             ranking[score.user.get().name] = state
