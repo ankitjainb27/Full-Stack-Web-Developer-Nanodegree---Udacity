@@ -98,7 +98,7 @@ class GameForm(messages.Message):
     game_over = messages.BooleanField(3, required=True)
     message = messages.StringField(4, required=True)
     user_name = messages.StringField(5, required=True)
-    target = messages.StringField(6, repeated=True)
+    target = messages.StringField(6, required=True)
     game_history = messages.StringField(7, repeated=True)
     alphabets_history = messages.StringField(9, repeated=True)
     game_cancel = messages.BooleanField(8, required=True)

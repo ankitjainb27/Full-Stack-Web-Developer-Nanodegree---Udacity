@@ -10,6 +10,7 @@ import endpoints
 from protorpc import remote, messages
 from google.appengine.api import memcache
 from google.appengine.api import taskqueue
+from google.appengine.ext import ndb
 
 from models import User, Game, Score
 from models import StringMessage, NewGameForm, GameForm, MakeMoveForm, \
@@ -63,11 +64,7 @@ class GuessANumberApi(remote.Service):
         if not user:
             raise endpoints.NotFoundException(
                 'A User with that name does not exist!')
-        try:
-            game = Game.new_game(user.key, request.attempts)
-        except ValueError:
-            raise endpoints.BadRequestException('Maximum must be greater '
-                                                'than minimum!')
+        game = Game.new_game(user.key, request.attempts)
 
         # Use a task queue to update the average attempts remaining.
         # This operation is not needed to complete the creation of a new game
@@ -95,7 +92,7 @@ class GuessANumberApi(remote.Service):
                     if i == (length - 1):
                         win_loss.append("Game Over - Lost")
                     else:
-                        win_loss.append("Turns Remaining")
+                        win_loss.append("In Progress")
                 i += 1
             # Combine alphabets that user guesses, the game history at every step and the win_loss state at that move
             history = zip(game.alphabets_history, game.game_history, win_loss)
@@ -104,7 +101,7 @@ class GuessANumberApi(remote.Service):
             # for items in history:
             #     x.append(list(items))
             # print str(x)
-            return StringMessage(message = str(history))
+            return StringMessage(message=str(history))
         else:
             raise endpoints.NotFoundException('Game not found!')
 
@@ -134,8 +131,9 @@ class GuessANumberApi(remote.Service):
                 return game.to_form_with_history('Game Not in Progress')
             else:
                 game.game_cancel = True
+                game.game_over = True
                 game.put()
-                return game.to_form_with_history('Game Cancelled')
+                return endpoints.ForbiddenException('Illegal action: Game is already over.')
         else:
             raise endpoints.NotFoundException('Game not found!')
 
@@ -158,29 +156,34 @@ class GuessANumberApi(remote.Service):
         if len(request.guess) != 1 and request.guess != " ":
             return game.to_form_with_history('Enter only single charater')
         if not re.search('[a-zA-Z]', request.guess):
-        # Restrict from making move if user didn't enter alphabet
+            # Restrict from making move if user didn't enter alphabet
             return game.to_form_with_history('Enter only alphabets')
         # Restrict from making move if user re-enters an alphabet
         if len(game.alphabets_history) > 0 and request.guess in game.alphabets_history:
             return game.to_form_with_history('Character already done')
 
         game.alphabets_history.append(request.guess)
-        game.attempts_remaining -= 1
+
+        guess_correct = False
         current_state = ""
         # Depending on the input the history is made and added in the db
         if len(game.game_history) == 0:
             for character in game.target:
                 if character == request.guess:
                     current_state += request.guess
+                    guess_correct = True
                 else:
                     current_state += "_"
         else:
             current_state = str(game.game_history[-1])
             for x in xrange(len(current_state)):
                 if game.target[x] == request.guess:
+                    guess_correct = True
                     s = list(current_state)
                     s[x] = request.guess
                     current_state = "".join(s)
+        if not guess_correct:
+            game.attempts_remaining -= 1
         game.game_history.append(current_state)
         if current_state == game.target:
             game.end_game(True)
@@ -210,7 +213,7 @@ class GuessANumberApi(remote.Service):
     def get_high_scores(self, request):
         """Return high scores"""
         # High score includes entries that won and in descending order of no. of guesses made
-        scores = Score.query(Score.won == True).order(-Score.guesses).fetch(request.number_of_results)
+        scores = Score.query(Score.won == True).order(Score.guesses).fetch(request.number_of_results)
         return ScoreForms(items=[score.to_form() for score in scores])
 
     @endpoints.method(response_message=StringMessage,
@@ -273,7 +276,8 @@ class GuessANumberApi(remote.Service):
         if not user:
             raise endpoints.NotFoundException(
                 'A User with that name does not exist!')
-        scores = Game.query(Game.user == user.key)
+        formatted_query = ndb.query.FilterNode('game_over', '=', False)
+        scores = Game.query(Game.user == user.key).filter(formatted_query)
         return GameForms(items=[score.to_form("") for score in scores])
 
     @endpoints.method(response_message=StringMessage,

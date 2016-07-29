@@ -26,6 +26,11 @@ given time. Each game can be retrieved or played by using the path parameter
 
 ##Score Keeping
 Score is kept when the game is over. It is stored if the user, won or lost the game and the no. of guesses he made in the game.
+High score includes entries that won and in descending order based on weighted score.
+ - User ranking is based on weighted score
+ - To calculate it the formula
+ - First we get a state, which is 1 for win and 0 for loss
+ - Final formula is = sum(state*guess)/(sum(guess))
 
 ##Files Included:
  - api.py: Contains endpoints and game playing logic.
