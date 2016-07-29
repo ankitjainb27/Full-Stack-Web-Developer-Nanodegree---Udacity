@@ -46,7 +46,7 @@ class Game(ndb.Model):
         form.game_over = self.game_over
         form.message = message
         form.user_name = self.user.get().name
-        # TODO  - Remove target, game_history and game_cancel
+        # TODO  - Remove target, game_history and game_cancel, in real production
         form.game_history = self.game_history
         form.game_cancel = self.game_cancel
         return form
@@ -59,7 +59,7 @@ class Game(ndb.Model):
         form.game_over = self.game_over
         form.message = message
         form.user_name = self.user.get().name
-        # TODO  - Remove target
+        # TODO  - Remove target, in production
         form.game_history = self.game_history
         form.alphabets_history = self.alphabets_history
         form.game_cancel = self.game_cancel
