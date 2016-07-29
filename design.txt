@@ -19,4 +19,4 @@ It is used to create a list of GameForm
 
 Challenges:
 Due to No-SQL nature of DataStore it was difficult to group_by in get_user_rankings.
-Thus, I used iteration and made a dict with key as user_name and dict of performance and guesses as value.
+Thus, I used iteration and made a dict with key as user_name and dict of performance as value.

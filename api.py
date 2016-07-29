@@ -4,7 +4,6 @@ This can also contain game logic. For more complex games it would be wise to
 move game logic to another file. Ideally the API will be simple, concerned
 primarily with communication to/from the API's users."""
 
-import logging
 import re
 import endpoints
 from protorpc import remote, messages
@@ -133,7 +132,7 @@ class GuessANumberApi(remote.Service):
                 game.game_cancel = True
                 game.game_over = True
                 game.put()
-                return endpoints.ForbiddenException('Illegal action: Game is already over.')
+                return game.to_form_with_history('Game Cancelled')
         else:
             raise endpoints.NotFoundException('Game not found!')
 
@@ -228,27 +227,16 @@ class GuessANumberApi(remote.Service):
         # First we get a state, which is 1 for win and 0 for loss
         # Final formula is = sum(state*guess)/(sum(guess))
         for score in Score.query():
-            state = {}
             if not ranking.get(str(score.user.get().name)):
-                state['guesses'] = score.guesses
-                if (score.won):
-                    state['perf'] = 1 / (state['guesses'] * 1.0)
-                else:
-                    state['perf'] = 0
+                ranking[score.user.get().name] = score.guesses
             else:
-                current_state = ranking.get(score.user.get().name)
-                state['guesses'] = score.guesses + current_state['guesses']
-                if (score.won):
-                    state['perf'] = (score.guesses + current_state['guesses'] * current_state['perf']) / (
-                        state['guesses'] * 1.0)
-                else:
-                    state['perf'] = (current_state['guesses'] * current_state['perf']) / (state['guesses'] * 1.0)
-            ranking[score.user.get().name] = state
+                ranking[score.user.get().name] += score.guesses
         ranking_list = []
         for key, value in ranking.iteritems():
-            a = (str(key), value.get('perf'))
+            a = (str(key), value)
             ranking_list.append(a)
         ranking_list = sorted(ranking_list, key=lambda tup: tup[1], reverse=True)
+        print str(ranking_list)
         return StringMessage(message=str(ranking_list))
 
     @endpoints.method(request_message=USER_REQUEST,
