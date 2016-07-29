@@ -123,6 +123,14 @@ Score is kept when the game is over. It is stored if the user, won or lost the g
     - Description: Returns all Scores recorded by the provided player (unordered).
     Will raise a NotFoundException if the User does not exist.
 
+ - **get_user_games**
+    - Path: 'games/user/{user_name}'
+    - Method: GET
+    - Parameters: user_name
+    - Returns: GameForms.
+    - Description: Returns all of an individual User's games.
+    Will raise a NotFoundException if the User does not exist.
+
  - **get_active_game_count**
     - Path: 'games/active'
     - Method: GET
@@ -144,9 +152,9 @@ Score is kept when the game is over. It is stored if the user, won or lost the g
 ##Forms Included:
  - **GameForm**
     - Representation of a Game's state (urlsafe_key, attempts_remaining,
-    game_over flag, message, user_name).
+    game_over flag, message, user_name, game_history, alphabets_history, game_cancel).
  - **NewGameForm**
-    - Used to create a new game (user_name, min, max, attempts)
+    - Used to create a new game (user_name, attempts)
  - **MakeMoveForm**
     - Inbound make move form (guess).
  - **ScoreForm**

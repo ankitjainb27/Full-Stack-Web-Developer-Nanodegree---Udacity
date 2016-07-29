@@ -122,19 +122,6 @@ class ScoreForms(messages.Message):
     items = messages.MessageField(ScoreForm, 1, repeated=True)
 
 
-class GameForms(messages.Message):
-    """Return multiple ScoreForms"""
-    items = messages.MessageField(GameForm, 1, repeated=True)
-
-class GameFormHistroy(messages.Message):
-    """StringMessage-- outbound (single) string message"""
-    items = messages.StringField(1, repeated=True)
-
-class GameFormsHistroy(messages.Message):
-    """Return multiple ScoreForms"""
-    items = messages.MessageField(GameFormHistroy, 1, repeated=True)
-
-
 class StringMessage(messages.Message):
     """StringMessage-- outbound (single) string message"""
     message = messages.StringField(1, required=True)
