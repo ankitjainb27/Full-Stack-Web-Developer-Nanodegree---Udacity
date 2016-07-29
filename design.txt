@@ -14,6 +14,9 @@ d)I added 'to_form_with_history' function to put 'game_history', 'alphabets_hist
 3)GameForm:
 Added 'game_history', 'alphabets_history' and 'game_cancel' to pass it in response.
 
+4)GameForms:
+It is used to create a list of GameForm
+
 Challenges:
 Due to No-SQL nature of DataStore it was difficult to group_by in get_user_rankings.
 Thus, I used iteration and made a dict with key as user_name and dict of performance and guesses as value.
