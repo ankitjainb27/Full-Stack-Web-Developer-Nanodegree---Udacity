@@ -1,5 +1,3 @@
-#Full Stack Nanodegree Project 4 Refresh
-
 ##Project: Game API
 Part of Full Stack Nanodegree on Udacity.com
 Link to Nanodegree - https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004
