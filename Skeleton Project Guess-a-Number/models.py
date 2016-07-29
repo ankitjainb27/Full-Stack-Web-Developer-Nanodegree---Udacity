@@ -11,7 +11,8 @@ from google.appengine.ext import ndb
 class User(ndb.Model):
     """User profile"""
     name = ndb.StringProperty(required=True)
-    email =ndb.StringProperty()
+    email = ndb.StringProperty()
+    remainder = ndb.BooleanProperty(default=False)
 
 
 class Game(ndb.Model):
@@ -24,8 +25,6 @@ class Game(ndb.Model):
     game_history = ndb.StringProperty(repeated=True)
     alphabets_history = ndb.StringProperty(repeated=True)
     user = ndb.KeyProperty(required=True, kind='User')
-
-
 
     @classmethod
     def new_game(cls, user, attempts):
@@ -91,6 +90,19 @@ class Score(ndb.Model):
                          date=str(self.date), guesses=self.guesses)
 
 
+
+class GameForm(messages.Message):
+    """GameForm for outbound game state information"""
+    urlsafe_key = messages.StringField(1, required=True)
+    attempts_remaining = messages.IntegerField(2, required=True)
+    game_over = messages.BooleanField(3, required=True)
+    message = messages.StringField(4, required=True)
+    user_name = messages.StringField(5, required=True)
+    target = messages.StringField(6, required=True)
+    game_history = messages.StringField(7, repeated=True)
+    alphabets_history = messages.StringField(9, repeated=True)
+    game_cancel = messages.BooleanField(8, required=True)
+
 class GameForm(messages.Message):
     """GameForm for outbound game state information"""
     urlsafe_key = messages.StringField(1, required=True)
@@ -128,6 +140,20 @@ class ScoreForms(messages.Message):
     items = messages.MessageField(ScoreForm, 1, repeated=True)
 
 
+class GameForms(messages.Message):
+    """Return multiple ScoreForms"""
+    items = messages.MessageField(GameForm, 1, repeated=True)
+
+class GameFormHistroy(messages.Message):
+    """StringMessage-- outbound (single) string message"""
+    items = messages.StringField(1, repeated=True)
+
+class GameFormsHistroy(messages.Message):
+    """Return multiple ScoreForms"""
+    items = messages.MessageField(GameFormHistroy, 1, repeated=True)
+
+
 class StringMessage(messages.Message):
     """StringMessage-- outbound (single) string message"""
     message = messages.StringField(1, required=True)
+

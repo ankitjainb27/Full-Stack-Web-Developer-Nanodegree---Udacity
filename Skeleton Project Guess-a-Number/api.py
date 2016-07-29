@@ -13,17 +13,22 @@ from google.appengine.api import taskqueue
 
 from models import User, Game, Score
 from models import StringMessage, NewGameForm, GameForm, MakeMoveForm, \
-    ScoreForms
+    ScoreForms, GameForms
 from utils import get_by_urlsafe
 
 NEW_GAME_REQUEST = endpoints.ResourceContainer(NewGameForm)
 GET_GAME_REQUEST = endpoints.ResourceContainer(
     urlsafe_game_key=messages.StringField(1), )
+GET_NUMBER_OF_RESULTS = endpoints.ResourceContainer(
+    number_of_results=messages.IntegerField(1), )
 MAKE_MOVE_REQUEST = endpoints.ResourceContainer(
     MakeMoveForm,
     urlsafe_game_key=messages.StringField(1), )
 USER_REQUEST = endpoints.ResourceContainer(user_name=messages.StringField(1),
                                            email=messages.StringField(2))
+CREATE_USER_REQUEST = endpoints.ResourceContainer(user_name=messages.StringField(1),
+                                                  email=messages.StringField(2),
+                                                  send_remainder=messages.BooleanField(3))
 
 MEMCACHE_MOVES_REMAINING = 'MOVES_REMAINING'
 
@@ -32,7 +37,7 @@ MEMCACHE_MOVES_REMAINING = 'MOVES_REMAINING'
 class GuessANumberApi(remote.Service):
     """Game API"""
 
-    @endpoints.method(request_message=USER_REQUEST,
+    @endpoints.method(request_message=CREATE_USER_REQUEST,
                       response_message=StringMessage,
                       path='user',
                       name='create_user',
@@ -42,7 +47,7 @@ class GuessANumberApi(remote.Service):
         if User.query(User.name == request.user_name).get():
             raise endpoints.ConflictException(
                 'A User with that name already exists!')
-        user = User(name=request.user_name, email=request.email)
+        user = User(name=request.user_name, email=request.email, remainder=request.send_remainder)
         user.put()
         return StringMessage(message='User {} created!'.format(
             request.user_name))
@@ -68,7 +73,38 @@ class GuessANumberApi(remote.Service):
         # This operation is not needed to complete the creation of a new game
         # so it is performed out of sequence.
         taskqueue.add(url='/tasks/cache_average_attempts')
-        return game.to_form('Good luck playing Guess a Number!')
+        return game.to_form('Good luck playing Hangman!')
+
+    @endpoints.method(request_message=GET_GAME_REQUEST,
+                      response_message=StringMessage,
+                      path='game/game_history/{urlsafe_game_key}',
+                      name='get_game_history',
+                      http_method='GET')
+    def get_game_history(self, request):
+        """Return the current game state."""
+        game = get_by_urlsafe(request.urlsafe_game_key, Game)
+        if game:
+            win_loss = []
+            i = 0
+            length = len(game.game_history)
+            for state in game.game_history:
+                if state == game.target:
+                    win_loss.append("Game Over - Won")
+                else:
+                    if i == (length - 1):
+                        win_loss.append("Game Over - Lost")
+                    else:
+                        win_loss.append("Turns Remaining")
+                i += 1
+            history = zip(game.alphabets_history, game.game_history, win_loss)
+            # If want to convert to a List of List
+            # x = []
+            # for items in history:
+            #     x.append(list(items))
+            # print str(x)
+            return StringMessage(message = str(history))
+        else:
+            raise endpoints.NotFoundException('Game not found!')
 
     @endpoints.method(request_message=GET_GAME_REQUEST,
                       response_message=GameForm,
@@ -80,6 +116,24 @@ class GuessANumberApi(remote.Service):
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
         if game:
             return game.to_form_with_history('Time to make a move!')
+        else:
+            raise endpoints.NotFoundException('Game not found!')
+
+    @endpoints.method(request_message=GET_GAME_REQUEST,
+                      response_message=GameForm,
+                      path='gamecancel/{urlsafe_game_key}',
+                      name='cancel_game',
+                      http_method='PUT')
+    def cancel_game(self, request):
+        """Return the current game state."""
+        game = get_by_urlsafe(request.urlsafe_game_key, Game)
+        if game:
+            if game.game_over:
+                return game.to_form_with_history('Game Not in Progress')
+            else:
+                game.game_cancel = True
+                game.put()
+                return game.to_form_with_history('Game Cancelled')
         else:
             raise endpoints.NotFoundException('Game not found!')
 
@@ -114,7 +168,6 @@ class GuessANumberApi(remote.Service):
                     current_state += "_"
         else:
             current_state = str(game.game_history[-1])
-            print len(current_state)
             for x in xrange(len(current_state)):
                 if game.target[x] == request.guess:
                     s = list(current_state)
@@ -141,6 +194,47 @@ class GuessANumberApi(remote.Service):
         """Return all scores"""
         return ScoreForms(items=[score.to_form() for score in Score.query()])
 
+    @endpoints.method(request_message=GET_NUMBER_OF_RESULTS,
+                      response_message=ScoreForms,
+                      path='scores_high',
+                      name='get_high_scores',
+                      http_method='GET')
+    def get_high_scores(self, request):
+        """Return all scores"""
+        scores = Score.query(Score.won == True).order(-Score.guesses).fetch(request.number_of_results)
+        return ScoreForms(items=[score.to_form() for score in scores])
+
+    @endpoints.method(response_message=StringMessage,
+                      path='scores_user_ranking',
+                      name='get_user_rankings',
+                      http_method='GET')
+    def get_user_rankings(self, request):
+        """Return all scores"""
+        ranking = {}
+        for score in Score.query():
+            state = {}
+            if not ranking.get(str(score.user.get().name)):
+                state['guesses'] = score.guesses
+                if (score.won):
+                    state['perf'] = 1 / (state['guesses'] * 1.0)
+                else:
+                    state['perf'] = 0
+            else:
+                current_state = ranking.get(score.user.get().name)
+                state['guesses'] = score.guesses + current_state['guesses']
+                if (score.won):
+                    state['perf'] = (score.guesses + current_state['guesses'] * current_state['perf']) / (
+                        state['guesses'] * 1.0)
+                else:
+                    state['perf'] = (current_state['guesses'] * current_state['perf']) / (state['guesses'] * 1.0)
+            ranking[score.user.get().name] = state
+        ranking_list = []
+        for key, value in ranking.iteritems():
+            a = (str(key), value.get('perf'))
+            ranking_list.append(a)
+        ranking_list = sorted(ranking_list, key=lambda tup: tup[1], reverse=True)
+        return StringMessage(message=str(ranking_list))
+
     @endpoints.method(request_message=USER_REQUEST,
                       response_message=ScoreForms,
                       path='scores/user/{user_name}',
@@ -154,6 +248,20 @@ class GuessANumberApi(remote.Service):
                 'A User with that name does not exist!')
         scores = Score.query(Score.user == user.key)
         return ScoreForms(items=[score.to_form() for score in scores])
+
+    @endpoints.method(request_message=USER_REQUEST,
+                      response_message=GameForms,
+                      path='games/user/{user_name}',
+                      name='get_user_games',
+                      http_method='GET')
+    def get_user_games(self, request):
+        """Returns all of an individual User's scores"""
+        user = User.query(User.name == request.user_name).get()
+        if not user:
+            raise endpoints.NotFoundException(
+                'A User with that name does not exist!')
+        scores = Game.query(Game.user == user.key)
+        return GameForms(items=[score.to_form("") for score in scores])
 
     @endpoints.method(response_message=StringMessage,
                       path='games/average_attempts',
