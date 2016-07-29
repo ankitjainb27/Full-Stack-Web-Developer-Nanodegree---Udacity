@@ -64,12 +64,15 @@ var Foursquare = function (meetup, map) {
     self.name = ko.observable(meetup.name);
     self.location = meetup.location;
     self.lat = self.location.lat;
+    console.log(self.lat)
+
     self.lng = self.location.lng;
+    console.log(self.lng)
     self.map_location = ko.computed(function () {
         if (self.lat === 0 || self.lon === 0) {
             return null;
         } else {
-            return new google.maps.LatLng(self.lat, self.lon);
+            return new google.maps.LatLng(self.lat, self.lng);
         }
     });
     self.formattedAddress = ko.observable(self.location.formattedAddress);
@@ -79,16 +82,18 @@ var Foursquare = function (meetup, map) {
         if (corner.map_location()) {
             marker = new google.maps.Marker({
                 position: corner.map_location(),
-                map: map,
+                map: map
             });
         }
 
         return marker;
     })(self);
+    self.id = ko.observable(meetup.id);
+    self.url = ko.observable(meetup.url);
     self.formattedMeetupList = function () {
         meetupSubstring = '<ul class="info-window-list">';
-        meetupSubstring += '<li>' + '<a href="' + meetup.url() + '">' +
-            meetup.name() +
+        meetupSubstring += '<li>' + '<a href="' + self.url() + '">' +
+            self.name() +
             '</a></li>';
         meetupSubstring += '</ul>';
         return '<div class="info-window-content">' +
@@ -98,9 +103,8 @@ var Foursquare = function (meetup, map) {
             '</div>';
     };
     // returns if the meetup has a venue that is listed
-    self.id = ko.observable(meetup.id);
-    self.url = ko.observable(meetup.url);
-    console.log(self)
+
+
 };
 
 
@@ -166,7 +170,7 @@ var AppViewModel = function () {
 
     var map,
         mapCanvas = $('#map')[0],
-        center = new google.maps.LatLng(40.7, -74); // Chicago
+        center = new google.maps.LatLng(40.725, -74); // Chicago
 
     var infoWindow = new google.maps.InfoWindow();
 
@@ -178,7 +182,6 @@ var AppViewModel = function () {
 
     self.query = ko.observable('');
     self.search = function () {
-        console.log("came");
         // empty function for future functionality, keep present to avoid page reload
     };
     self.filteredCornerList = ko.computed(function () {
@@ -212,7 +215,6 @@ var AppViewModel = function () {
             }
         });
     };
-    console.log("came3");
     function fetchMeetups(url) {
         var data;
 
