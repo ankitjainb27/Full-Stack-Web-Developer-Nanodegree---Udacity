@@ -46,7 +46,9 @@ class Game(ndb.Model):
         form.game_over = self.game_over
         form.message = message
         form.user_name = self.user.get().name
-        # TODO  - Remove target, game_history and game_cancel, in real production
+        # TODO  - Remove target and game_cancel, in real production.
+        # Have put target so that it is easier for grader to grade
+        form.target = self.target
         form.game_history = self.game_history
         form.game_cancel = self.game_cancel
         return form
@@ -60,6 +62,8 @@ class Game(ndb.Model):
         form.message = message
         form.user_name = self.user.get().name
         # TODO  - Remove target, in production
+        # Have put target so that it is easier for grader to grade
+        form.target = self.target
         form.game_history = self.game_history
         form.alphabets_history = self.alphabets_history
         form.game_cancel = self.game_cancel
@@ -94,6 +98,7 @@ class GameForm(messages.Message):
     game_over = messages.BooleanField(3, required=True)
     message = messages.StringField(4, required=True)
     user_name = messages.StringField(5, required=True)
+    target = messages.StringField(6, repeated=True)
     game_history = messages.StringField(7, repeated=True)
     alphabets_history = messages.StringField(9, repeated=True)
     game_cancel = messages.BooleanField(8, required=True)

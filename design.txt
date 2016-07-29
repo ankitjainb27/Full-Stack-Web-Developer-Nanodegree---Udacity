@@ -1,1 +1,19 @@
-asdasd
+Design documents indicating what design decision I took and why.
+
+1) User :
+I added 'remainder' field to enable users to choose whether they want to receive a reminder every one hour to play Hangman.
+Also, I made the default as False of remainder so that they get the remainder only if they choose the same.
+
+2) Game :
+Variables
+a)I added 'game_cancel' field to be able to cancel a game. A user can't make a move is game is cancelled.
+b)I added 'game_history' field to keep the history of Hangman game. It stores the letter the user guesses right and for the other ones it is a '_'.
+c)I added 'alphabets_history' field to refrain user to guessing a letter they already guesses and waste an attempt.
+d)I added 'to_form_with_history' function to put 'game_history', 'alphabets_history', 'game_cancel'
+
+3)GameForm:
+Added 'game_history', 'alphabets_history' and 'game_cancel' to pass it in response.
+
+Challenges:
+Due to No-SQL nature of DataStore it was difficult to group_by in get_user_rankings.
+Thus, I used iteration and made a dict with key as user_name and dict of performance and guesses as value.
