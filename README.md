@@ -1,5 +1,15 @@
 #Full Stack Nanodegree Project 4 Refresh
 
+## Game API Project Overview
+In the Developing Scalable Apps with Python course you learned how to write platform-agnostic apps using Google App Engine backed by Google Datastore.
+
+In this project you will use these skills to develop your own game!
+You will write an API with endpoints that will allow anyone to develop a front-end for your game.
+Since you aren't required to write a front-end you can use API explorer to test your API.Let's get started!
+
+View the details [here](https://classroom.udacity.com/nanodegrees/nd004/parts/00413454012/modules/356635917875461/lessons/3566359178239847/concepts/72231259940923).
+
+
 ## Set-Up Instructions:
 1.  Update the value of application in app.yaml to the app ID you have registered
  in the App Engine admin console and would like to use to host your instance of this sample.
@@ -7,9 +17,9 @@
  running by visiting the API Explorer - by default localhost:8080/_ah/api/explorer.
 1.  (Optional) Generate your client library(ies) with the endpoints tool.
  Deploy your application.
- 
- 
- 
+
+
+
 ##Game Description:
 Guess a number is a simple guessing game. Each game begins with a random 'target'
 number between the minimum and maximum values provided, and a maximum number of
@@ -34,9 +44,9 @@ given time. Each game can be retrieved or played by using the path parameter
     - Method: POST
     - Parameters: user_name, email (optional)
     - Returns: Message confirming creation of the User.
-    - Description: Creates a new User. user_name provided must be unique. Will 
+    - Description: Creates a new User. user_name provided must be unique. Will
     raise a ConflictException if a User with that user_name already exists.
-    
+
  - **new_game**
     - Path: 'game'
     - Method: POST
@@ -46,14 +56,14 @@ given time. Each game can be retrieved or played by using the path parameter
     existing user - will raise a NotFoundException if not. Min must be less than
     max. Also adds a task to a task queue to update the average moves remaining
     for active games.
-     
+
  - **get_game**
     - Path: 'game/{urlsafe_game_key}'
     - Method: GET
     - Parameters: urlsafe_game_key
     - Returns: GameForm with current game state.
     - Description: Returns the current state of a game.
-    
+
  - **make_move**
     - Path: 'game/{urlsafe_game_key}'
     - Method: PUT
@@ -61,22 +71,22 @@ given time. Each game can be retrieved or played by using the path parameter
     - Returns: GameForm with new game state.
     - Description: Accepts a 'guess' and returns the updated state of the game.
     If this causes a game to end, a corresponding Score entity will be created.
-    
+
  - **get_scores**
     - Path: 'scores'
     - Method: GET
     - Parameters: None
     - Returns: ScoreForms.
     - Description: Returns all Scores in the database (unordered).
-    
+
  - **get_user_scores**
     - Path: 'scores/user/{user_name}'
     - Method: GET
     - Parameters: user_name
-    - Returns: ScoreForms. 
+    - Returns: ScoreForms.
     - Description: Returns all Scores recorded by the provided player (unordered).
     Will raise a NotFoundException if the User does not exist.
-    
+
  - **get_active_game_count**
     - Path: 'games/active'
     - Method: GET
@@ -88,13 +98,13 @@ given time. Each game can be retrieved or played by using the path parameter
 ##Models Included:
  - **User**
     - Stores unique user_name and (optional) email address.
-    
+
  - **Game**
     - Stores unique game states. Associated with User model via KeyProperty.
-    
+
  - **Score**
     - Records completed games. Associated with Users model via KeyProperty.
-    
+
 ##Forms Included:
  - **GameForm**
     - Representation of a Game's state (urlsafe_key, attempts_remaining,

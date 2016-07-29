@@ -81,12 +81,13 @@ class GuessANumberApi(remote.Service):
                       name='get_game_history',
                       http_method='GET')
     def get_game_history(self, request):
-        """Return the current game state."""
+        """Return the game history of a particular game."""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
         if game:
             win_loss = []
             i = 0
             length = len(game.game_history)
+            # To make a list of win, loss or in progress
             for state in game.game_history:
                 if state == game.target:
                     win_loss.append("Game Over - Won")
@@ -96,6 +97,7 @@ class GuessANumberApi(remote.Service):
                     else:
                         win_loss.append("Turns Remaining")
                 i += 1
+            # Combine alphabets that user guesses, the game history at every step and the win_loss state at that move
             history = zip(game.alphabets_history, game.game_history, win_loss)
             # If want to convert to a List of List
             # x = []
@@ -125,7 +127,7 @@ class GuessANumberApi(remote.Service):
                       name='cancel_game',
                       http_method='PUT')
     def cancel_game(self, request):
-        """Return the current game state."""
+        """Cancel a particular game"""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
         if game:
             if game.game_over:
@@ -133,8 +135,7 @@ class GuessANumberApi(remote.Service):
             else:
                 game.game_cancel = True
                 game.put()
-                return game.to_form_with_history('Game Cancegits'
-                                                 'lled')
+                return game.to_form_with_history('Game Cancelled')
         else:
             raise endpoints.NotFoundException('Game not found!')
 
@@ -146,21 +147,27 @@ class GuessANumberApi(remote.Service):
     def make_move(self, request):
         """Makes a move. Returns a game state with message"""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
+        # Restrict from making move is game is over
         if game.game_over:
             return game.to_form_with_history('Game already over!')
+        # Restrict from making move is game is cancelled
         if game.game_cancel:
             return game.to_form_with_history('Game Cancelled!')
         request.guess = request.guess.lower()
+        # Restrict from making move if user entered more than one character
         if len(request.guess) != 1 and request.guess != " ":
             return game.to_form_with_history('Enter only single charater')
         if not re.search('[a-zA-Z]', request.guess):
+        # Restrict from making move if user didn't enter alphabet
             return game.to_form_with_history('Enter only alphabets')
+        # Restrict from making move if user re-enters an alphabet
         if len(game.alphabets_history) > 0 and request.guess in game.alphabets_history:
             return game.to_form_with_history('Character already done')
 
         game.alphabets_history.append(request.guess)
         game.attempts_remaining -= 1
         current_state = ""
+        # Depending on the input the history is made and added in the db
         if len(game.game_history) == 0:
             for character in game.target:
                 if character == request.guess:
@@ -201,7 +208,8 @@ class GuessANumberApi(remote.Service):
                       name='get_high_scores',
                       http_method='GET')
     def get_high_scores(self, request):
-        """Return all scores"""
+        """Return high scores"""
+        # High score includes entries that won and in descending order of no. of guesses made
         scores = Score.query(Score.won == True).order(-Score.guesses).fetch(request.number_of_results)
         return ScoreForms(items=[score.to_form() for score in scores])
 
@@ -210,8 +218,12 @@ class GuessANumberApi(remote.Service):
                       name='get_user_rankings',
                       http_method='GET')
     def get_user_rankings(self, request):
-        """Return all scores"""
+        """Return the ranking of all users"""
         ranking = {}
+        # User ranking is based on weighted score
+        # To calculate it the formula
+        # First we get a state, which is 1 for win and 0 for loss
+        # Final formula is = sum(state*guess)/(sum(guess))
         for score in Score.query():
             state = {}
             if not ranking.get(str(score.user.get().name)):
@@ -256,7 +268,7 @@ class GuessANumberApi(remote.Service):
                       name='get_user_games',
                       http_method='GET')
     def get_user_games(self, request):
-        """Returns all of an individual User's scores"""
+        """Returns all of an individual User's games"""
         user = User.query(User.name == request.user_name).get()
         if not user:
             raise endpoints.NotFoundException(
