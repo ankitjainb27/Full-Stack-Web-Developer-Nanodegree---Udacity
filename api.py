@@ -235,8 +235,7 @@ class GuessANumberApi(remote.Service):
         for key, value in ranking.iteritems():
             a = (str(key), value)
             ranking_list.append(a)
-        ranking_list = sorted(ranking_list, key=lambda tup: tup[1], reverse=True)
-        print str(ranking_list)
+        ranking_list = sorted(ranking_list, key=lambda tup: tup[1])
         return StringMessage(message=str(ranking_list))
 
     @endpoints.method(request_message=USER_REQUEST,
