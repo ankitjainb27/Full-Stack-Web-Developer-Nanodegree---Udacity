@@ -26,7 +26,7 @@ header, aside {
 }
 
 header {
-    height: 100px;
+    height: 120px;
     top: 0;
     left: 0;
 }
@@ -46,13 +46,13 @@ aside {
 }
 
 /* search */
+
 #search-form {
     color: black;
     padding: 8px;
     text-align: center;
     width: 100%;
 }
-
 #search-input {
     width: 260px;
 }
@@ -76,7 +76,8 @@ aside {
 
 #list li:hover {
     cursor: pointer;
-    background: blue;
+    background: lightcyan;
+    color: black;
 }
 
 .corner-name {
@@ -85,6 +86,10 @@ aside {
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 75%;
+}
+
+.corner-info {
+    background: transparent;
 }
 
 .meetup-info {
@@ -120,7 +125,7 @@ aside {
     #map, .container {
         position: absolute;
         left: 0;
-        height: 60%;
+        height: 100%;
         bottom: 0;
     }
 
@@ -149,5 +154,8 @@ aside {
         left: 0;
         top: 100px;
         width: 100%;
+    }
+    #search-summary {
+        display: none;
     }
 }

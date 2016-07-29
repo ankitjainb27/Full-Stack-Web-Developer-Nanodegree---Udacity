@@ -15,22 +15,23 @@
     <div class="mobile-container">
         <header>
             <h1>
-                 Coding Centers near Chicago
+                Sushi Restaurant In New York
             </h1>
             <form id="search-form" data-bind="submit: search">
-                <input id="search-input" data-bind="value: query" placeholder="Search..." autofocus/>
-                <button id="search-btn" type="submit">
-                    <span class="glyphicon glyphicon-search"></span>
-                </button>
+                <input id="search-input" data-bind="value: query" placeholder="Search..."
+                       autofocus/>
+                <button class="btn btn-primary" id="search-btn" type="submit">
+                    <span class="glyphicon glyphicon-search"></span></button>
                 <p id="search-summary">
                     <span data-bind="text: numCorners"></span>
                     corners
                 </p>
             </form>
+
         </header>
         <aside>
-            <ul data-bind="foreach: {data: filteredCornerList, as: 'corner'}" id="list">
-                <li data-bind="click: $root.selectCorner" class="corner-info">
+            <ul class="list-group" data-bind="foreach: {data: filteredCornerList, as: 'corner'}" id="list">
+                <li data-bind="click: $root.selectCorner" class="corner-info list-group-item">
                     <span class="corner-name" data-bind="text: corner.name"></span>
                 </li>
             </ul>
