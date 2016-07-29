@@ -73,7 +73,7 @@ class GuessANumberApi(remote.Service):
         # This operation is not needed to complete the creation of a new game
         # so it is performed out of sequence.
         taskqueue.add(url='/tasks/cache_average_attempts')
-        return game.to_form('Good luck playing Hangman!')
+        return game.to_form('Good luck playing Hangman!, It is a three letter word')
 
     @endpoints.method(request_message=GET_GAME_REQUEST,
                       response_message=StringMessage,
