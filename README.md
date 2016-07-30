@@ -7,3 +7,5 @@ Link to Nanodegree - https://www.udacity.com/course/full-stack-web-developer-nan
 http://localhost:63343/ud864/index.html
 
 Go the html and open it in your favorite web browser, preferably Google Chrome.
+
+I have used Foursquare Api to list Sushi Places in New York

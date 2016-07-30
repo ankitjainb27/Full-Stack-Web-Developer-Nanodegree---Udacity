@@ -4,11 +4,11 @@ String.prototype.contains = function (other) {
 
 var Foursquare = function (meetup, map) {
     var self = this;
-    // attach venue object
     self.name = ko.observable(meetup.name);
     self.location = meetup.location;
     self.lat = self.location.lat;
     self.lng = self.location.lng;
+    //map_location returns a computed observable of latitude and longitude
     self.map_location = ko.computed(function () {
         if (self.lat === 0 || self.lon === 0) {
             return null;
@@ -17,6 +17,7 @@ var Foursquare = function (meetup, map) {
         }
     });
     self.formattedAddress = ko.observable(self.location.formattedAddress);
+    self.formattedPhone = ko.observable(meetup.contact.formattedPhone);
     self.marker = (function (corner) {
         var marker;
 
@@ -34,12 +35,11 @@ var Foursquare = function (meetup, map) {
     self.formattedMeetupList = function () {
         return '<div class="info-window-content">' + '<a href="' + self.url() + '">' +
             '<span class="info-window-header">' + self.name() + '</span>' +
-            '</a><p>' + self.formattedAddress() + '</p>' +
+            '</a><p>' + self.formattedAddress() +'<br>'+ self.formattedPhone() + '</p>' +
             '</div>';
     };
 };
 
-/* Represents a Google Map object */
 var GoogleMap = function (center, element) {
     var mapOptions = {
         zoom: 13,
@@ -47,7 +47,6 @@ var GoogleMap = function (center, element) {
         mapTypeControlOptions: {
             mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'usroadatlas']
         },
-
         mapTypeControl: false,
         panControl: false,
         streetViewControl: false,
@@ -73,7 +72,7 @@ var AppViewModel = function () {
 
     var map,
         mapCanvas = $('#map')[0],
-        center = new google.maps.LatLng(40.725, -74); // Chicago
+        center = new google.maps.LatLng(40.725, -74); // New York
 
     var infoWindow = new google.maps.InfoWindow();
 
@@ -83,13 +82,14 @@ var AppViewModel = function () {
 
     self.query = ko.observable('');
     self.search = function () {
-        // empty function for future functionality, keep present to avoid page reload
+        // present to avoid page reload
     };
     self.filteredCornerList = ko.computed(function () {
         self.meetupList().forEach(function (corner) {
             corner.marker.setMap(null);
         });
 
+        //To filter results based on search
         var results = ko.utils.arrayFilter(self.meetupList(), function (corner) {
             return corner.name().toLowerCase().contains(self.query().toLowerCase());
         });
@@ -125,7 +125,6 @@ var AppViewModel = function () {
             data: 'client_id=TVCLSUOTWTNYYYNQXJLM2CM5LGMUQPNO0RAPW1O5WLMPWCQH%20&client_secret=SCRGCS4SBR5J1IDRRWTKBAUIM31YB4TUKMMRVRJOW13DC1PW%20&v=20130815%20&ll=40.7,-74%20&query=sushi',
             async: false,
         }).done(function (response) {
-            // pull `results` array from JSON
             data = response.response.venues;
             data.forEach(function (meetup) {
                 foursquare = new Foursquare(meetup, map)
