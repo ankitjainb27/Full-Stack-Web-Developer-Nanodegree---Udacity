@@ -8,7 +8,6 @@ var Foursquare = function (meetup, map) {
     self.location = meetup.location;
     self.lat = self.location.lat;
     self.lng = self.location.lng;
-    //map_location returns a computed observable of latitude and longitude
     self.map_location = ko.computed(function () {
         if (self.lat === 0 || self.lon === 0) {
             return null;
@@ -20,14 +19,12 @@ var Foursquare = function (meetup, map) {
     self.formattedPhone = ko.observable(meetup.contact.formattedPhone);
     self.marker = (function (corner) {
         var marker;
-
         if (corner.map_location()) {
             marker = new google.maps.Marker({
                 position: corner.map_location(),
                 map: map
             });
         }
-
         return marker;
     })(self);
     self.id = ko.observable(meetup.id);

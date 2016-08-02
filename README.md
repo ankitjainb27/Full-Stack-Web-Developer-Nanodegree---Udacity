@@ -8,4 +8,4 @@ http://localhost:63343/ud864/index.html
 
 Go the html and open it in your favorite web browser, preferably Google Chrome.
 
-I have used Foursquare Api to list Sushi Places in New York
+I have used Foursquare Api to list Sushi Places in New6 York
