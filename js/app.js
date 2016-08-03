@@ -1,33 +1,25 @@
-//<script>
 String.prototype.contains = function (other) {
     return this.indexOf(other) !== -1;
 };
 
-// Create a new blank array for all the listing markers.
-var markers = [];
-
 var defaultIcon = makeMarkerIcon('0091ff');
-
-// Create a "highlighted location" marker color for when the user
-// mouses over the marker.
 var highlightedIcon = makeMarkerIcon('FFFF24');
-
 
 function makeMarkerIcon(markerColor) {
     var markerImage = new google.maps.MarkerImage(
-        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
         '|40|_|%E2%80%A2',
         new google.maps.Size(21, 34),
         new google.maps.Point(0, 0),
         new google.maps.Point(10, 34),
-        new google.maps.Size(21,34));
+        new google.maps.Size(21, 34));
     return markerImage;
 }
 
-var Foursquare = function (meetup, map) {
+var Foursquare = function (restaurant, map) {
     var self = this;
-    self.name = ko.observable(meetup.name);
-    self.location = meetup.location;
+    self.name = ko.observable(restaurant.name);
+    self.location = restaurant.location;
     self.lat = self.location.lat;
     self.lng = self.location.lng;
     //map_location returns a computed observable of latitude and longitude
@@ -39,31 +31,27 @@ var Foursquare = function (meetup, map) {
         }
     });
     self.formattedAddress = ko.observable(self.location.formattedAddress);
-    self.formattedPhone = ko.observable(meetup.contact.formattedPhone);
-
-
-    self.marker = (function (corner) {
+    self.formattedPhone = ko.observable(restaurant.contact.formattedPhone);
+    self.marker = (function (restaurant) {
         var marker;
 
-        if (corner.map_location()) {
+        if (restaurant.map_location()) {
             marker = new google.maps.Marker({
-                position: corner.map_location(),
+                position: restaurant.map_location(),
                 map: map,
                 icon: defaultIcon
             });
         }
-
         return marker;
     })(self);
-    self.id = ko.observable(meetup.id);
-    self.url = ko.observable(meetup.url);
-    self.formattedMeetupList = function () {
+    self.id = ko.observable(restaurant.id);
+    self.url = ko.observable(restaurant.url);
+    self.formattedInfoWindowData = function () {
         return '<div class="info-window-content">' + '<a href="' + self.url() + '">' +
             '<span class="info-window-header">' + self.name() + '</span>' +
-            '</a><p>' + self.formattedAddress() +'<br>'+ self.formattedPhone() + '</p>' +
+            '</a><p>' + self.formattedAddress() + '<br>' + self.formattedPhone() + '</p>' +
             '</div>';
     };
-
 };
 
 function initMap() {
@@ -72,70 +60,69 @@ function initMap() {
         {
             featureType: 'water',
             stylers: [
-                { color: '#19a0d8' }
+                {color: '#19a0d8'}
             ]
-        },{
+        }, {
             featureType: 'administrative',
             elementType: 'labels.text.stroke',
             stylers: [
-                { color: '#ffffff' },
-                { weight: 6 }
+                {color: '#ffffff'},
+                {weight: 6}
             ]
-        },{
+        }, {
             featureType: 'administrative',
             elementType: 'labels.text.fill',
             stylers: [
-                { color: '#e85113' }
+                {color: '#e85113'}
             ]
-        },{
+        }, {
             featureType: 'road.highway',
             elementType: 'geometry.stroke',
             stylers: [
-                { color: '#efe9e4' },
-                { lightness: -40 }
+                {color: '#efe9e4'},
+                {lightness: -40}
             ]
-        },{
+        }, {
             featureType: 'transit.station',
             stylers: [
-                { weight: 9 },
-                { hue: '#e85113' }
+                {weight: 9},
+                {hue: '#e85113'}
             ]
-        },{
+        }, {
             featureType: 'road.highway',
             elementType: 'labels.icon',
             stylers: [
-                { visibility: 'off' }
+                {visibility: 'off'}
             ]
-        },{
+        }, {
             featureType: 'water',
             elementType: 'labels.text.stroke',
             stylers: [
-                { lightness: 100 }
+                {lightness: 100}
             ]
-        },{
+        }, {
             featureType: 'water',
             elementType: 'labels.text.fill',
             stylers: [
-                { lightness: -100 }
+                {lightness: -100}
             ]
-        },{
+        }, {
             featureType: 'poi',
             elementType: 'geometry',
             stylers: [
-                { visibility: 'on' },
-                { color: '#f0e4d3' }
+                {visibility: 'on'},
+                {color: '#f0e4d3'}
             ]
-        },{
+        }, {
             featureType: 'road.highway',
             elementType: 'geometry.fill',
             stylers: [
-                { color: '#efe9e4' },
-                { lightness: -25 }
+                {color: '#efe9e4'},
+                {lightness: -25}
             ]
         }
     ];
 
-    // Constructor creates a new map - only center and zoom are required.
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 40.725, lng: -74},
         zoom: 13,
@@ -143,70 +130,8 @@ function initMap() {
         mapTypeControl: false
     });
 
-    // These are the real estate listings that will be shown to the user.
-    // Normally we'd have these in a database instead.
-   /* var locations = [
-        {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-        {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-        {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-        {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-        {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-        {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
-    ];
-*/
-    var largeInfowindow = new google.maps.InfoWindow();
-
-    // Style the markers a bit. This will be our listing marker icon.
-
     return map;
-/*
-    var largeInfowindow = new google.maps.InfoWindow();
-    // The following group uses the location array to create an array of markers on initialize.
-    for (var i = 0; i < locations.length; i++) {
-        // Get the position from the location array.
-        var position = locations[i].location;
-        var title = locations[i].title;
-        // Create a marker per location, and put into markers array.
-        var marker = new google.maps.Marker({
-            position: position,
-            title: title,
-            animation: google.maps.Animation.DROP,
-            icon: defaultIcon,
-            id: i
-        });
-        // Push the marker to our array of markers.
-        markers.push(marker);
-        // Create an onclick event to open the large infowindow at each marker.
-        marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfowindow);
-        });
-        // Two event listeners - one for mouseover, one for mouseout,
-        // to change the colors back and forth.
-        marker.addListener('mouseover', function() {
-            this.setIcon(highlightedIcon);
-        });
-        marker.addListener('mouseout', function() {
-            this.setIcon(defaultIcon);
-        });
-    }
-    showListings();
-    document.getElementById('show-listings').addEventListener('click', showListings);
-    document.getElementById('hide-listings').addEventListener('click', hideListings);
-*/
 }
-
-
-
-// This function will loop through the markers array and display them all.
-
-
-// This function will loop through the listings and hide them all.
-
-
-// This function takes in a COLOR, and then creates a new marker
-// icon of that color. The icon will be 21 px wide by 34 high, have an origin
-// of 0, 0 and be anchored at 10, 34).
-
 
 var AppViewModel = function () {
     var self = this;
@@ -221,48 +146,44 @@ var AppViewModel = function () {
     }
 
     var map;
-
     var infoWindow = new google.maps.InfoWindow();
-
     self.sushiRestuarantList = ko.observableArray([]);
-
     self.numSushiRestaurant = ko.observable(0);
-
     self.query = ko.observable('');
+
     self.search = function () {
-        // present to avoid page reload
     };
-    self.filteredCornerList = ko.computed(function () {
-        self.sushiRestuarantList().forEach(function (corner) {
-            corner.marker.setMap(null);
+
+    self.FilteredSushiRestuarantList= ko.computed(function () {
+        self.sushiRestuarantList().forEach(function (restaurant) {
+            restaurant.marker.setMap(null);
         });
 
-        //To filter results based on search
-        var results = ko.utils.arrayFilter(self.sushiRestuarantList(), function (corner) {
-            return corner.name().toLowerCase().contains(self.query().toLowerCase());
+        var results = ko.utils.arrayFilter(self.sushiRestuarantList(), function (restaurant) {
+            return restaurant.name().toLowerCase().contains(self.query().toLowerCase());
         });
 
-        results.forEach(function (corner) {
-            corner.marker.setMap(map);
+        results.forEach(function (restaurant) {
+            restaurant.marker.setMap(map);
         });
 
         self.numSushiRestaurant(results.length);
         return results;
     });
 
-    self.selectCorner = function (corner) {
-        infoWindow.setContent(corner.formattedMeetupList());
+    self.selectRestaurant = function (restaurant) {
+        infoWindow.setContent(restaurant.formattedInfoWindowData());
 
-        infoWindow.open(map, corner.marker);
+        infoWindow.open(map, restaurant.marker);
 
-        map.panTo(corner.marker.position);
+        map.panTo(restaurant.marker.position);
 
-        corner.marker.setAnimation(google.maps.Animation.BOUNCE);
-        corner.marker.setIcon(highlightedIcon);
-        self.sushiRestuarantList().forEach(function (old_corner) {
-            if (corner != old_corner) {
-                old_corner.marker.setAnimation(null);
-                old_corner.marker.setIcon(defaultIcon);
+        restaurant.marker.setAnimation(google.maps.Animation.BOUNCE);
+        restaurant.marker.setIcon(highlightedIcon);
+        self.sushiRestuarantList().forEach(function (old_restaurant) {
+            if (restaurant != old_restaurant) {
+                old_restaurant.marker.setAnimation(null);
+                old_restaurant.marker.setIcon(defaultIcon);
             }
         });
     };
@@ -276,15 +197,14 @@ var AppViewModel = function () {
             async: false,
         }).done(function (response) {
             data = response.response.venues;
-            console.log(data)
-            data.forEach(function (meetup) {
-                foursquare = new Foursquare(meetup, map)
+            data.forEach(function (restaurant) {
+                foursquare = new Foursquare(restaurant, map)
                 self.sushiRestuarantList.push(foursquare);
             });
-            self.sushiRestuarantList().forEach(function (meetup) {
-                if (meetup.map_location()) {
-                    google.maps.event.addListener(meetup.marker, 'click', function () {
-                        self.selectCorner(meetup);
+            self.sushiRestuarantList().forEach(function (restaurant) {
+                if (restaurant.map_location()) {
+                    google.maps.event.addListener(restaurant.marker, 'click', function () {
+                        self.selectRestaurant(restaurant);
                     });
                 }
             });
@@ -297,4 +217,3 @@ var AppViewModel = function () {
 };
 
 ko.applyBindings(new AppViewModel());
-//</script>

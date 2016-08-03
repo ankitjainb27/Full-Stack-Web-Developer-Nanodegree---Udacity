@@ -27,8 +27,8 @@
             </form>
         </header>
         <aside>
-            <ul class="list-group" data-bind="foreach: {data: filteredCornerList, as: 'corner'}" id="list">
-                <li data-bind="click: $root.selectCorner" class="corner-info list-group-item">
+            <ul class="list-group" data-bind="foreach: {data: FilteredSushiRestuarantList, as: 'corner'}" id="list">
+                <li data-bind="click: $root.selectRestaurant" class="list-group-item">
                     <span class="corner-name" data-bind="text: corner.name"></span>
                 </li>
             </ul>
