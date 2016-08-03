@@ -1,6 +1,7 @@
 var defaultIcon = makeMarkerIcon('0091ff');
 var highlightedIcon = makeMarkerIcon('FFFF24');
 
+//function to make default and highlighted marker icon
 function makeMarkerIcon(markerColor) {
     var markerImage = new google.maps.MarkerImage(
         'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
@@ -12,6 +13,7 @@ function makeMarkerIcon(markerColor) {
     return markerImage;
 }
 
+//Foursquare model
 var Foursquare = function (restaurant, map) {
     var self = this;
     self.name = ko.observable(restaurant.name);
@@ -50,6 +52,7 @@ var Foursquare = function (restaurant, map) {
     };
 };
 
+//function to initialize map
 function initMap() {
     // Create a styles array to use with the map.
     var styles = [
@@ -133,6 +136,7 @@ String.prototype.contains = function (other) {
     return this.indexOf(other) !== -1;
 };
 
+//Knockout's View Model
 var AppViewModel = function () {
     var self = this;
 
@@ -152,8 +156,10 @@ var AppViewModel = function () {
     self.query = ko.observable('');
 
     self.search = function () {
+        //To prevent reload of page on click search button
     };
 
+    //List of sushi restaurants after filter based on query added in search
     self.FilteredSushiRestuarantList = ko.computed(function () {
         self.sushiRestuarantList().forEach(function (restaurant) {
             restaurant.marker.setMap(null);
@@ -171,22 +177,22 @@ var AppViewModel = function () {
         return results;
     });
 
+    //function called when a restaurant is clicked from the filtered list
     self.selectRestaurant = function (restaurant) {
         infoWindow.setContent(restaurant.formattedInfoWindowData());
-
         infoWindow.open(map, restaurant.marker);
-
         map.panTo(restaurant.marker.position);
-
         restaurant.marker.setAnimation(google.maps.Animation.BOUNCE);
         restaurant.marker.setIcon(highlightedIcon);
-        self.sushiRestuarantList().forEach(function (old_restaurant) {
-            if (restaurant != old_restaurant) {
-                old_restaurant.marker.setAnimation(null);
-                old_restaurant.marker.setIcon(defaultIcon);
+        self.sushiRestuarantList().forEach(function (unselected_restaurant) {
+            if (restaurant != unselected_restaurant) {
+                unselected_restaurant.marker.setAnimation(null);
+                unselected_restaurant.marker.setIcon(defaultIcon);
             }
         });
     };
+
+    //function to fetch sushi restaurants in New York
     function fetchSushiRestaurants() {
         var data;
 

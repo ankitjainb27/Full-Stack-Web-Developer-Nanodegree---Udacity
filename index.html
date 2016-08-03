@@ -1,45 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Neigbourhood Map</title>
+    <title>Sushi in Neigbour</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="lib/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/application.css"/>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAU6YcILXCae7VphudEmpgHGmtqLZdiCR8&libraries=places"></script>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAU6YcILXCae7VphudEmpgHGmtqLZdiCR8&v3">
+    </script>
 </head>
 <body>
 <div class="container">
+    <!--For Map-->
     <div id="map"></div>
-    <div class="mobile-container">
+    <!--Box for search and seeing search results-->
+    <div class="options-box">
+        <!--Search Box-->
         <header>
-            <h1>
-                Sushi Restaurant In New York
-            </h1>
-            <form id="search-form" data-bind="submit: search">
-                <input id="search-input" data-bind="value: query" placeholder="Search..."
-                       autofocus/>
-                <button class="btn btn-primary" id="search-btn" type="submit">
-                    <span class="glyphicon glyphicon-search"></span></button>
-                <p id="search-summary">
-                    <span data-bind="text: numCorners"></span>
-                    corners from Foursquare
-                </p>
+            <h1> Sushi Restaurant In New York</h1>
+            <form class="form-inline" id="form-search" data-bind="submit: search">
+                <input type="text" class="form-control" data-bind="value: query" id="query-input" placeholder="Search"
+                       autofocus>
+                <button type="submit" id="submit-button" class="btn btn-primary"><span
+                        class="glyphicon glyphicon-search"></span></button>
             </form>
-
-            <header>
+            <!--Number of results from the serach filter-->
+            <p id="query-summary">
+                <span data-bind="text: numSushiRestaurant"></span>
+                Sushi Restaurant from Foursquare
+            </p>
+        </header>
+        <!--List of search Results-->
         <aside>
-            <ul class="list-group" data-bind="foreach: {data: filteredCornerList, as: 'corner'}" id="list">
-                <li data-bind="click: $root.selectCorner" class="corner-info list-group-item">
-                    <span class="corner-name" data-bind="text: corner.name"></span>
+            <ul class="list-group" data-bind="foreach: {data: FilteredSushiRestuarantList, as: 'restaurant'}" id="list">
+                <li data-bind="click: $root.selectRestaurant" class="list-group-item">
+                    <span data-bind="text: restaurant.name"></span>
                 </li>
             </ul>
         </aside>
     </div>
+
 </div>
 <script src="lib/jquery-2.1.3.min.js"></script>
 <script src="lib/bootstrap.min.js"></script>
 <script src="lib/knockout-3.2.0.min.js"></script>
-<script src="js/application.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
