@@ -1,7 +1,3 @@
-String.prototype.contains = function (other) {
-    return this.indexOf(other) !== -1;
-};
-
 var defaultIcon = makeMarkerIcon('0091ff');
 var highlightedIcon = makeMarkerIcon('FFFF24');
 
@@ -133,6 +129,10 @@ function initMap() {
     return map;
 }
 
+String.prototype.contains = function (other) {
+    return this.indexOf(other) !== -1;
+};
+
 var AppViewModel = function () {
     var self = this;
 
@@ -154,7 +154,7 @@ var AppViewModel = function () {
     self.search = function () {
     };
 
-    self.FilteredSushiRestuarantList= ko.computed(function () {
+    self.FilteredSushiRestuarantList = ko.computed(function () {
         self.sushiRestuarantList().forEach(function (restaurant) {
             restaurant.marker.setMap(null);
         });
@@ -215,5 +215,6 @@ var AppViewModel = function () {
 
     google.maps.event.addDomListener(window, 'load', initialize);
 };
+
 
 ko.applyBindings(new AppViewModel());

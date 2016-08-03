@@ -25,7 +25,6 @@ h1 {
     text-align: center;
 }
 
-
 header {
     height: 100px;
     top: 0;
@@ -38,6 +37,10 @@ header {
     color: black;
 }
 
+#query-summary {
+    text-align: center;
+}
+
 aside {
     position: absolute;
     top: 110px;
@@ -48,24 +51,24 @@ aside {
 }
 
 #form-search {
-    width:100%;
+    width: 100%;
     display: inline-block;
 }
 
 #query-input {
-     width: 78%;
+    width: 78%;
     display: inline-block;
     margin: 0;
 }
 
-#query-input1 {
+#submit-button {
     width: 20%;
     display: inline-block;
     margin: 0;
 }
 
 #map {
-    bottom:0px;
+    bottom: 0px;
     height: 100%;
     width: 70%;
     position: absolute;
@@ -92,7 +95,6 @@ aside {
         position: relative;
     }
 
-
     #map {
         height: 60%;
         width: 100%;
@@ -114,8 +116,6 @@ aside {
         left: 0;
     }
 
-
-
     aside {
         position: static;
         top: 100px;
@@ -123,23 +123,5 @@ aside {
         height: 60%;
         overflow: auto;
     }
-
-  /*  header {
-        background: rgba(0, 0, 0, 0.6);
-        position: static;
-        height: 40%;
-        left: 0;
-        top: 0;
-        width: 100%;
-    }
-
-    aside {
-        background: rgba(0, 0, 0, 0.6);
-        height: 60%;
-        position: static;
-        left: 0;
-        top: 100px;
-        width: 100%;
-    }*/
 
 }
