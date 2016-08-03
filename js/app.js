@@ -1,16 +1,16 @@
-var defaultIcon = makeMarkerIcon('0091ff');
-var highlightedIcon = makeMarkerIcon('FFFF24');
+var defaultIcon;
+var highlightedIcon;
 
 //function to make default and highlighted marker icon
 function makeMarkerIcon(markerColor) {
-    var markerImage = new google.maps.MarkerImage(
-        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
-        '|40|_|%E2%80%A2',
-        new google.maps.Size(21, 34),
-        new google.maps.Point(0, 0),
-        new google.maps.Point(10, 34),
-        new google.maps.Size(21, 34));
-    return markerImage;
+        var markerImage = new google.maps.MarkerImage(
+            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+            '|40|_|%E2%80%A2',
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(10, 34),
+            new google.maps.Size(21, 34));
+        return markerImage;
 }
 
 //Foursquare model
@@ -145,12 +145,15 @@ var AppViewModel = function () {
         fetchSushiRestaurants();
     }
 
-    if (typeof google !== 'object' || typeof google.maps !== 'object') {
-        $('#search-summary').text("Could not load Google Maps API");
-    }
-
     var map;
-    var infoWindow = new google.maps.InfoWindow();
+    if (typeof google !== 'object' || typeof google.maps !== 'object') {
+        $('#query-summary').text("Could not load Google Maps");
+    } else {
+        defaultIcon = makeMarkerIcon('0091ff');
+        highlightedIcon = makeMarkerIcon('FFFF24');
+        var infoWindow = new google.maps.InfoWindow();
+        google.maps.event.addDomListener(window, 'load', initialize);
+    }
     self.sushiRestuarantList = ko.observableArray([]);
     self.numSushiRestaurant = ko.observable(0);
     self.query = ko.observable('');
@@ -200,7 +203,7 @@ var AppViewModel = function () {
             url: 'https://api.foursquare.com/v2/venues/search',
             dataType: 'json',
             data: 'client_id=TVCLSUOTWTNYYYNQXJLM2CM5LGMUQPNO0RAPW1O5WLMPWCQH%20&client_secret=SCRGCS4SBR5J1IDRRWTKBAUIM31YB4TUKMMRVRJOW13DC1PW%20&v=20130815%20&ll=40.7,-74%20&query=sushi',
-            async: false,
+            async: true,
         }).done(function (response) {
             data = response.response.venues;
             data.forEach(function (restaurant) {
@@ -215,11 +218,9 @@ var AppViewModel = function () {
                 }
             });
         }).fail(function (response, status, error) {
-            $('#search-summary').text('Sushi Restaurants could not load...');
+            $('#query-summary').text('Sushi Restaurants could not load...');
         });
     }
-
-    google.maps.event.addDomListener(window, 'load', initialize);
 };
 
 
