@@ -1,59 +1,15 @@
+var map;
 var defaultIcon;
 var highlightedIcon;
 
-//function to make default and highlighted marker icon
-function makeMarkerIcon(markerColor) {
-        var markerImage = new google.maps.MarkerImage(
-            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
-            '|40|_|%E2%80%A2',
-            new google.maps.Size(21, 34),
-            new google.maps.Point(0, 0),
-            new google.maps.Point(10, 34),
-            new google.maps.Size(21, 34));
-        return markerImage;
+function googleError(){
+    $('#query-summary').text("Could not load Google Maps");
+    $('#list').hide();
 }
-
-//Foursquare model
-var Foursquare = function (restaurant, map) {
-    var self = this;
-    self.name = ko.observable(restaurant.name);
-    self.location = restaurant.location;
-    self.lat = self.location.lat;
-    self.lng = self.location.lng;
-    //map_location returns a computed observable of latitude and longitude
-    self.map_location = ko.computed(function () {
-        if (self.lat === 0 || self.lon === 0) {
-            return null;
-        } else {
-            return new google.maps.LatLng(self.lat, self.lng);
-        }
-    });
-    self.formattedAddress = ko.observable(self.location.formattedAddress);
-    self.formattedPhone = ko.observable(restaurant.contact.formattedPhone);
-    self.marker = (function (restaurant) {
-        var marker;
-
-        if (restaurant.map_location()) {
-            marker = new google.maps.Marker({
-                position: restaurant.map_location(),
-                map: map,
-                icon: defaultIcon
-            });
-        }
-        return marker;
-    })(self);
-    self.id = ko.observable(restaurant.id);
-    self.url = ko.observable(restaurant.url);
-    self.formattedInfoWindowData = function () {
-        return '<div class="info-window-content">' + '<a href="' + self.url() + '">' +
-            '<span class="info-window-header">' + self.name() + '</span>' +
-            '</a><p>' + self.formattedAddress() + '<br>' + self.formattedPhone() + '</p>' +
-            '</div>';
-    };
-};
 
 //function to initialize map
 function initMap() {
+    "use strict";
     // Create a styles array to use with the map.
     var styles = [
         {
@@ -128,8 +84,8 @@ function initMap() {
         styles: styles,
         mapTypeControl: false
     });
+    ko.applyBindings(new AppViewModel());
 
-    return map;
 }
 
 String.prototype.contains = function (other) {
@@ -141,13 +97,11 @@ var AppViewModel = function () {
     var self = this;
 
     function initialize() {
-        map = initMap();
         fetchSushiRestaurants();
     }
 
-    var map;
+
     if (typeof google !== 'object' || typeof google.maps !== 'object') {
-        $('#query-summary').text("Could not load Google Maps");
     } else {
         defaultIcon = makeMarkerIcon('0091ff');
         highlightedIcon = makeMarkerIcon('FFFF24');
@@ -207,7 +161,7 @@ var AppViewModel = function () {
         }).done(function (response) {
             data = response.response.venues;
             data.forEach(function (restaurant) {
-                foursquare = new Foursquare(restaurant, map)
+                foursquare = new Foursquare(restaurant, map);
                 self.sushiRestuarantList.push(foursquare);
             });
             self.sushiRestuarantList().forEach(function (restaurant) {
@@ -223,5 +177,54 @@ var AppViewModel = function () {
     }
 };
 
+//function to make default and highlighted marker icon
+function makeMarkerIcon(markerColor) {
+    var markerImage = new google.maps.MarkerImage(
+        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+        '|40|_|%E2%80%A2',
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34),
+        new google.maps.Size(21, 34));
+    return markerImage;
+}
 
-ko.applyBindings(new AppViewModel());
+//Foursquare model
+var Foursquare = function (restaurant, map) {
+    var self = this;
+    self.name = ko.observable(restaurant.name);
+    self.location = restaurant.location;
+    self.lat = self.location.lat;
+    self.lng = self.location.lng;
+    //map_location returns a computed observable of latitude and longitude
+    self.map_location = ko.computed(function () {
+        if (self.lat === 0 || self.lon === 0) {
+            return null;
+        } else {
+            return new google.maps.LatLng(self.lat, self.lng);
+        }
+    });
+    self.formattedAddress = ko.observable(self.location.formattedAddress);
+    self.formattedPhone = ko.observable(restaurant.contact.formattedPhone);
+    self.marker = (function (restaurant) {
+        var marker;
+
+        if (restaurant.map_location()) {
+            marker = new google.maps.Marker({
+                position: restaurant.map_location(),
+                map: map,
+                icon: defaultIcon
+            });
+        }
+        return marker;
+    })(self);
+    self.id = ko.observable(restaurant.id);
+    self.url = ko.observable(restaurant.url);
+    self.formattedInfoWindowData = function () {
+        return '<div class="info-window-content">' + '<a href="' + self.url() + '">' +
+            '<span class="info-window-header">' + self.name() + '</span>' +
+            '</a><p>' + self.formattedAddress() + '<br>' + self.formattedPhone() + '</p>' +
+            '</div>';
+    };
+};
+
