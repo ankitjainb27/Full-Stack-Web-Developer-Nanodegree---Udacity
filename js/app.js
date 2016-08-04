@@ -2,7 +2,8 @@ var map;
 var defaultIcon;
 var highlightedIcon;
 
-function googleError(){
+function googleError() {
+    //self.abc = ko.observable('');
     $('#query-summary').text("Could not load Google Maps");
     $('#list').hide();
 }
@@ -109,12 +110,14 @@ var AppViewModel = function () {
         google.maps.event.addDomListener(window, 'load', initialize);
     }
     self.sushiRestuarantList = ko.observableArray([]);
-    self.numSushiRestaurant = ko.observable(0);
+    //self.numSushiRestaurant = ko.observable(0);
     self.query = ko.observable('');
+    self.queryResult = ko.observable('');
 
     self.search = function () {
         //To prevent reload of page on click search button
     };
+
 
     //List of sushi restaurants after filter based on query added in search
     self.FilteredSushiRestuarantList = ko.computed(function () {
@@ -129,10 +132,19 @@ var AppViewModel = function () {
         results.forEach(function (restaurant) {
             restaurant.marker.setMap(map);
         });
-
-        self.numSushiRestaurant(results.length);
+        if (results.length > 0) {
+            if (results.length == 1) {
+                self.queryResult(results.length + " Sushi Restaurant from Foursquare");
+            } else {
+                self.queryResult(results.length + " Sushi Restaurants from Foursquare");
+            }
+        }
+        else {
+            self.queryResult("No Sushi Restaurants Available");
+        }
         return results;
     });
+    self.queryResult("Loading Sushi Restaurants, Please wait...")
 
     //function called when a restaurant is clicked from the filtered list
     self.selectRestaurant = function (restaurant) {
