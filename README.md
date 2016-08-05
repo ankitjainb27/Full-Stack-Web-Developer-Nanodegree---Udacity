@@ -4,6 +4,10 @@ Build Complex Web Applications
 
 Link to Nanodegree - https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004
 
+## Certificate
+![Certificate](https://github.com/ankitjainb27/Full-Stack-Web-Developer-Nanodegree---Udacity/blob/master/certificate.png)
+
+## About the course
 This program prepares one for a job as a Full Stack Web Developer, and teach one to build complex server-side web applications that use powerful relational databases to persistently store data.
 
 One learns to build applications that can support any front-end, and scale to support hundreds of thousands of users.
